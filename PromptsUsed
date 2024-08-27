@@ -1,0 +1,35 @@
+Prompt 1: Make the app be a 3 row layout. On the top show a header that says "Attacking" and below write a pokemon type. In the second row show the type color in a square. On the third row, show all of the possible pokemon types with a radio button by each that says 0,2x,1,and 1/2. Default the radio buttons to 1. On the fourth row put a submit button that grades the correct answers and display a score below the submit button that says "Your Score"
+
+Prompt 2: when I press submit, I want you to grade whether the radio button choices were correct. Add "Defender" over the list of types. After submission change to a new random type and change the color of the box.
+
+Prompt 3: complete the rest of the correct effectiveness object
+
+Prompt 4: center the color under the attacking type header.
+
+Prompt 5: use flexbox to space the radio button lists evenly
+
+Prompt 6: put attacking in a div with a red grid background, and defending in a blue grid background
+
+Prompt 7: each defender type should be on its own row with the radio buttons to the right of the type text.
+
+Prompt 8: change the page to be two columns, attacker and defender on the left, and a results on the right. When I submit, show the submit history on the right side showing me the answers I got right and wrong, as well as the score gained for each.
+
+Prompt 9: Correct answers should have a green background, incorrect should have red. On the defender types: the row background color should match the type.
+
+Prompt 10: reset back to 1x after each submit
+
+Prompt 11: if the radio button does not match the correct answer is should be marked as red in the results
+
+Prompt 12: incorrect answers are still showing green. please fix that.
+
+Prompt 13: add a button that swaps attacker to defender and defender to attacker.  Add the correct effectiveness for defenders.
+
+Prompt 14: should be showing attacking type and defending type for each result
+
+Prompt 15: submission header only shows fire
+
+Prompt 16: attacker should be random when visting the page
+
+Prompt 17: results should be newest first
+
+Prompt 18: add the title pokemon type quiz. and add a background of red and white moving polka dots in front of a suble blue gradient.
