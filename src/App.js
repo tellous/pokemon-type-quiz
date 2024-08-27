@@ -9,24 +9,24 @@ function App() {
   const [submitHistory, setSubmitHistory] = useState([]);
 
   const correctEffectiveness = {
-    Normal: { Rock: '2', Steel: '2', Ghost: '0' },
-    Fire: { Water: '2', Ground: '2', Rock: '2', Fire: '1/2', Grass: '1/2', Ice: '1/2', Bug: '1/2', Steel: '1/2', Fairy: '1/2' },
-    Water: { Grass: '2', Electric: '2', Water: '1/2', Fire: '1/2', Ice: '1/2', Steel: '1/2' },
-    Electric: { Ground: '2', Electric: '1/2', Flying: '1/2', Steel: '1/2' },
-    Grass: { Fire: '2', Ice: '2', Poison: '2', Flying: '2', Bug: '2', Water: '1/2', Ground: '1/2', Grass: '1/2', Electric: '1/2' },
-    Ice: { Fire: '2', Fighting: '2', Rock: '2', Steel: '2', Ice: '1/2' },
-    Fighting: { Flying: '2', Psychic: '2', Fairy: '2', Bug: '1/2', Rock: '1/2', Dark: '1/2' },
-    Poison: { Ground: '2', Psychic: '2', Grass: '1/2', Fighting: '1/2', Poison: '1/2', Bug: '1/2', Fairy: '1/2' },
-    Ground: { Water: '2', Grass: '2', Ice: '2', Poison: '1/2', Rock: '1/2', Electric: '0' },
-    Flying: { Electric: '2', Ice: '2', Rock: '2', Grass: '1/2', Fighting: '1/2', Bug: '1/2', Ground: '0' },
-    Psychic: { Bug: '2', Ghost: '2', Dark: '2', Fighting: '1/2', Psychic: '1/2' },
-    Bug: { Fire: '2', Flying: '2', Rock: '2', Grass: '1/2', Fighting: '1/2', Ground: '1/2' },
-    Rock: { Water: '2', Grass: '2', Fighting: '2', Ground: '2', Steel: '2', Normal: '1/2', Fire: '1/2', Poison: '1/2', Flying: '1/2' },
-    Ghost: { Ghost: '2', Dark: '2', Psychic: '2', Normal: '0', Fighting: '0' },
-    Dragon: { Ice: '2', Dragon: '2', Fairy: '2', Fire: '1/2', Water: '1/2', Grass: '1/2', Electric: '1/2' },
-    Dark: { Fighting: '2', Bug: '2', Fairy: '2', Ghost: '1/2', Dark: '1/2', Psychic: '0' },
-    Steel: { Fire: '2', Fighting: '2', Ground: '2', Normal: '1/2', Grass: '1/2', Ice: '1/2', Flying: '1/2', Psychic: '1/2', Bug: '1/2', Rock: '1/2', Dragon: '1/2', Steel: '1/2', Fairy: '1/2', Poison: '0' },
-    Fairy: { Poison: '2', Steel: '2', Fighting: '1/2', Bug: '1/2', Dark: '1/2', Dragon: '0' }
+    "Normal": { "Rock": 0.5, "Ghost": 0, "Steel": 0.5 },
+    "Fire": { "Fire": 0.5, "Water": 0.5, "Grass": 2, "Ice": 2, "Bug": 2, "Rock": 0.5, "Dragon": 0.5, "Steel": 2 },
+    "Water": { "Fire": 2, "Water": 0.5, "Grass": 0.5, "Ground": 2, "Rock": 2, "Dragon": 0.5 },
+    "Electric": { "Water": 2, "Electric": 0.5, "Grass": 0.5, "Ground": 0, "Flying": 2, "Dragon": 0.5 },
+    "Grass": { "Fire": 0.5, "Water": 2, "Grass": 0.5, "Poison": 0.5, "Ground": 2, "Flying": 0.5, "Bug": 0.5, "Rock": 2, "Dragon": 0.5, "Steel": 0.5 },
+    "Ice": { "Fire": 0.5, "Water": 0.5, "Grass": 2, "Ice": 0.5, "Ground": 2, "Flying": 2, "Dragon": 2, "Steel": 0.5 },
+    "Fighting": { "Normal": 2, "Ice": 2, "Poison": 0.5, "Flying": 0.5, "Psychic": 0.5, "Bug": 0.5, "Rock": 2, "Ghost": 0, "Dark": 2, "Steel": 2, "Fairy": 0.5 },
+    "Poison": { "Grass": 2, "Poison": 0.5, "Ground": 0.5, "Rock": 0.5, "Ghost": 0.5, "Steel": 0, "Fairy": 2 },
+    "Ground": { "Fire": 2, "Electric": 2, "Grass": 0.5, "Poison": 2, "Flying": 0, "Bug": 0.5, "Rock": 2, "Steel": 2 },
+    "Flying": { "Electric": 0.5, "Grass": 2, "Fighting": 2, "Bug": 2, "Rock": 0.5, "Steel": 0.5 },
+    "Psychic": { "Fighting": 2, "Poison": 2, "Psychic": 0.5, "Dark": 0, "Steel": 0.5 },
+    "Bug": { "Fire": 0.5, "Grass": 2, "Fighting": 0.5, "Poison": 0.5, "Flying": 0.5, "Psychic": 2, "Ghost": 0.5, "Dark": 2, "Steel": 0.5, "Fairy": 0.5 },
+    "Rock": { "Fire": 2, "Ice": 2, "Fighting": 0.5, "Ground": 0.5, "Flying": 2, "Bug": 2, "Steel": 0.5 },
+    "Ghost": { "Normal": 0, "Psychic": 2, "Ghost": 2, "Dark": 0.5, "Steel": 0.5 },
+    "Dragon": { "Dragon": 2, "Steel": 0.5, "Fairy": 0 },
+    "Dark": { "Fighting": 0.5, "Psychic": 2, "Ghost": 2, "Dark": 0.5, "Steel": 0.5, "Fairy": 0.5 },
+    "Steel": { "Fire": 0.5, "Water": 0.5, "Electric": 0.5, "Ice": 2, "Rock": 2, "Steel": 0.5, "Fairy": 2 },
+    "Fairy": { "Fire": 0.5, "Fighting": 2, "Poison": 0.5, "Dragon": 2, "Dark": 2, "Steel": 0.5 }
   };
 
   const typeColors = {
@@ -110,6 +110,7 @@ function App() {
         }}>
           Pokémon Type Quiz
         </h1>
+        <p>Version 1.0.1</p>
         <div style={{ display: 'flex', width: '100%' }}>
           <div className="left-column" style={{ flex: 1, padding: '20px' }}>
             <div className="row">
@@ -157,13 +158,13 @@ function App() {
                     }}>
                       <span style={{ flexBasis: '100px', color: '#fff', fontWeight: 'bold' }}>{type}</span>
                       <div style={{ display: 'flex', justifyContent: 'flex-end', flexGrow: 1 }}>
-                        {['0', '1/2', '1', '2'].map((value) => (
+                        {[0, 0.5, 1, 2].map((value) => (
                           <label key={value} style={{ marginLeft: '10px' }}>
                             <input
                               type="radio"
                               name={`${type}-effectiveness`}
                               value={value}
-                              defaultChecked={value === '1'}
+                              defaultChecked={value === 1}
                             />
                             {value}x
                           </label>
