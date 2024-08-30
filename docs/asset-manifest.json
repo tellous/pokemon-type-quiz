@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/pokemon-type-quiz/static/css/main.f855e6bc.css",
-    "main.js": "/pokemon-type-quiz/static/js/main.f8506abf.js",
+    "main.js": "/pokemon-type-quiz/static/js/main.0cada553.js",
     "static/js/453.ad6eb26e.chunk.js": "/pokemon-type-quiz/static/js/453.ad6eb26e.chunk.js",
     "index.html": "/pokemon-type-quiz/index.html",
     "main.f855e6bc.css.map": "/pokemon-type-quiz/static/css/main.f855e6bc.css.map",
-    "main.f8506abf.js.map": "/pokemon-type-quiz/static/js/main.f8506abf.js.map",
+    "main.0cada553.js.map": "/pokemon-type-quiz/static/js/main.0cada553.js.map",
     "453.ad6eb26e.chunk.js.map": "/pokemon-type-quiz/static/js/453.ad6eb26e.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f855e6bc.css",
-    "static/js/main.f8506abf.js"
+    "static/js/main.0cada553.js"
   ]
 }

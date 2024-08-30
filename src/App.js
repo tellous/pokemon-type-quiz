@@ -70,6 +70,7 @@ function App() {
     display: 'inline-block',
     cursor: isTop ? 'pointer' : 'default',
     paddingBottom: '2px',
+    fontFamily: "'Nunito', sans-serif",
   });
 
   const Tooltip = ({ attacker, defender }) => {
@@ -78,6 +79,7 @@ function App() {
     const typeStyle = (type) => ({
       color: typeColors[type],
       fontWeight: 'bold',
+      fontFamily: "'Nunito', sans-serif",
     });
 
     return (
@@ -92,6 +94,7 @@ function App() {
         fontSize: '0.9em',
         zIndex: 1000,
         textAlign: 'center',
+        fontFamily: "'Nunito', sans-serif",
       }}>
         <p style={{ margin: '0 0 5px 0' }}>
           <span style={typeStyle(attacker)}>{typeEmojis[attacker]} {attacker}</span>
@@ -158,6 +161,7 @@ function App() {
       top: 0,
       boxShadow: `0 6px 0 ${shadowColor}`,
       outline: 'none',
+      fontFamily: "'Nunito', sans-serif",
     };
   };
 
@@ -362,8 +366,8 @@ function App() {
       alignItems: 'center',
       justifyContent: 'center',
       color: 'white',
-      padding: '20px',
       boxSizing: 'border-box',
+      fontFamily: "'Nunito', sans-serif",
     }}>
       <div style={{
         width: '100%',
@@ -378,7 +382,7 @@ function App() {
         <div style={{
           flex: 1,
           overflowY: 'auto',
-          padding: '20px',
+          padding: '5px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -423,7 +427,7 @@ function App() {
 
           <div style={{
             width: '100%',
-            marginBottom: '20px',
+            marginBottom: '10px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -449,15 +453,16 @@ function App() {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
+                fontFamily: "'Nunito', sans-serif",
               }}>
-                Focus: {focusTypeIndex === 0 ? 'None' : (
+                <span>Focus: {focusTypeIndex === 0 ? 'None' : (
                   <>
                     <span>{types[focusTypeIndex - 1]}</span>
                     <span style={{ marginLeft: '5px', fontSize: '0.8em', opacity: 0.8 }}>
                       ({isAttackerFocus ? '⚔️ Attacker' : '🛡️ Defender'})
                     </span>
                   </>
-                )}
+                )}</span>
               </div>
               <FaChevronRight 
                 onClick={() => handleFocusChange(1)} 
@@ -469,7 +474,7 @@ function App() {
                 <>
                   <button
                     onClick={clearFocus}
-                    style={smallButtonStyle('#f44336')}
+                    style={{...smallButtonStyle('#f44336'), fontFamily: "'Nunito', sans-serif"}}
                     onMouseDown={(e) => handleButtonPress(e, '#d32f2f')}
                     onMouseUp={(e) => handleButtonRelease(e, '#d32f2f')}
                     onMouseLeave={(e) => handleButtonRelease(e, '#d32f2f')}
@@ -480,7 +485,7 @@ function App() {
                   </button>
                   <button
                     onClick={toggleFocusMode}
-                    style={smallButtonStyle('#2196F3')}
+                    style={{...smallButtonStyle('#2196F3'), fontFamily: "'Nunito', sans-serif"}}
                     onMouseDown={(e) => handleButtonPress(e, '#1976D2')}
                     onMouseUp={(e) => handleButtonRelease(e, '#1976D2')}
                     onMouseLeave={(e) => handleButtonRelease(e, '#1976D2')}
@@ -497,7 +502,6 @@ function App() {
           <div className="top-section" style={{
             width: '100%',
             textAlign: 'center',
-            marginBottom: '20px',
             position: 'relative',
           }}>
             <h2 style={{fontSize: '1.2em', margin: '0 0 10px 0'}}>
@@ -518,11 +522,11 @@ function App() {
           <button 
             onClick={handleSwap} 
             style={{
-              margin: '10px 0',
+              margin: '30px 0',
               padding: '10px 20px',
-              fontSize: '1em',
-              backgroundColor: '#4CAF50',
-              color: 'white',
+              fontSize: '1.5em',
+              backgroundColor: '#FFD700', // Changed to yellow
+              color: 'black', // Changed to black for better contrast on yellow
               border: 'none',
               borderRadius: '5px',
               cursor: 'pointer',
@@ -531,16 +535,23 @@ function App() {
               justifyContent: 'center',
               position: 'relative',
               top: 0,
-              boxShadow: '0 6px 0 #45a049',
+              boxShadow: '0 6px 0 #DAA520', // Darker yellow for shadow
               transition: 'all 0.1s ease',
+              fontFamily: "'Nunito', sans-serif",
             }}
-            onMouseDown={(e) => handleButtonPress(e, '#45a049')}
-            onMouseUp={(e) => handleButtonRelease(e, '#45a049')}
-            onMouseLeave={(e) => handleButtonRelease(e, '#45a049')}
-            onTouchStart={(e) => handleButtonPress(e, '#45a049')}
-            onTouchEnd={(e) => handleButtonRelease(e, '#45a049')}
+            onMouseDown={(e) => handleButtonPress(e, '#DAA520')} // Darker yellow
+            onMouseUp={(e) => handleButtonRelease(e, '#DAA520')} // Darker yellow
+            onMouseLeave={(e) => handleButtonRelease(e, '#DAA520')} // Darker yellow
+            onTouchStart={(e) => handleButtonPress(e, '#DAA520')} // Darker yellow
+            onTouchEnd={(e) => handleButtonRelease(e, '#DAA520')} // Darker yellow
           >
-            <FaExchangeAlt style={{ marginRight: '5px' }} /> Swap
+            <span style={{
+              display: 'inline-block',
+              transform: isAttackerMode ? 'rotate(-90deg)' : 'rotate(90deg)',
+              transition: 'transform 0.3s ease',
+            }}>
+              ➜
+            </span>
           </button>
 
           <div className="bottom-section" style={{
@@ -575,7 +586,7 @@ function App() {
                     key={value} 
                     onClick={() => handleEffectivenessClick(value === '1/2' ? 0.5 : value)} 
                     disabled={!!feedback}
-                    style={buttonStyle(bgColor, effectivenessColors[value].text)}
+                    style={{...buttonStyle(bgColor, effectivenessColors[value].text), fontFamily: "'Nunito', sans-serif"}}
                     onMouseDown={(e) => handleButtonPress(e, shadowColor)}
                     onMouseUp={(e) => handleButtonRelease(e, shadowColor)}
                     onMouseLeave={(e) => handleButtonRelease(e, shadowColor)}
@@ -618,6 +629,7 @@ function App() {
                   width: 'auto',
                   padding: '10px 20px',
                   marginTop: '10px',
+                  fontFamily: "'Nunito', sans-serif",
                 }}
                 onMouseDown={(e) => handleButtonPress(e, '#1976D2')}
                 onMouseUp={(e) => handleButtonRelease(e, '#1976D2')}
