@@ -229,9 +229,13 @@ function App() {
 
   const handleContinue = () => {
     if (isAttackerMode) {
-      // Cycle through defenders (top type)
-      const nextDefenderIndex = (types.indexOf(topType) + 1) % types.length;
-      setTopType(types[nextDefenderIndex]);
+      // Set defender (top type) to focus type if defender focus, otherwise cycle
+      if (focusType && !isAttackerFocus) {
+        setTopType(focusType);
+      } else {
+        const nextDefenderIndex = (types.indexOf(topType) + 1) % types.length;
+        setTopType(types[nextDefenderIndex]);
+      }
       // Set attacker (bottom type) to focus type if attacker focus, otherwise random
       if (focusType && isAttackerFocus) {
         setBottomType(focusType);
@@ -239,9 +243,13 @@ function App() {
         setBottomType(getRandomType(bottomType));
       }
     } else {
-      // Cycle through defenders (bottom type)
-      const nextDefenderIndex = (types.indexOf(bottomType) + 1) % types.length;
-      setBottomType(types[nextDefenderIndex]);
+      // Set defender (bottom type) to focus type if defender focus, otherwise cycle
+      if (focusType && !isAttackerFocus) {
+        setBottomType(focusType);
+      } else {
+        const nextDefenderIndex = (types.indexOf(bottomType) + 1) % types.length;
+        setBottomType(types[nextDefenderIndex]);
+      }
       // Set attacker (top type) to focus type if attacker focus, otherwise random
       if (focusType && isAttackerFocus) {
         setTopType(focusType);
