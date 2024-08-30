@@ -319,6 +319,16 @@ function App() {
     setBottomTooltipVisible(false);
   };
 
+  const handleButtonPress = (e) => {
+    e.currentTarget.style.top = '4px';
+    e.currentTarget.style.boxShadow = '0 2px 0 #d32f2f';
+  };
+
+  const handleButtonRelease = (e) => {
+    e.currentTarget.style.top = '0';
+    e.currentTarget.style.boxShadow = '0 6px 0 #d32f2f';
+  };
+
   return (
     <div className="App" style={{
       backgroundColor: '#282c34',
@@ -441,18 +451,11 @@ function App() {
                       color: 'white',
                       boxShadow: '0 2px 0 #d32f2f',
                     }}
-                    onMouseDown={(e) => {
-                      e.currentTarget.style.top = '2px';
-                      e.currentTarget.style.boxShadow = '0 0 0 #d32f2f';
-                    }}
-                    onMouseUp={(e) => {
-                      e.currentTarget.style.top = '0';
-                      e.currentTarget.style.boxShadow = '0 2px 0 #d32f2f';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.top = '0';
-                      e.currentTarget.style.boxShadow = '0 2px 0 #d32f2f';
-                    }}
+                    onMouseDown={handleButtonPress}
+                    onMouseUp={handleButtonRelease}
+                    onMouseLeave={handleButtonRelease}
+                    onTouchStart={handleButtonPress}
+                    onTouchEnd={handleButtonRelease}
                   >
                     Clear
                   </button>
@@ -464,18 +467,11 @@ function App() {
                       color: 'white',
                       boxShadow: '0 2px 0 #1976D2',
                     }}
-                    onMouseDown={(e) => {
-                      e.currentTarget.style.top = '2px';
-                      e.currentTarget.style.boxShadow = '0 0 0 #1976D2';
-                    }}
-                    onMouseUp={(e) => {
-                      e.currentTarget.style.top = '0';
-                      e.currentTarget.style.boxShadow = '0 2px 0 #1976D2';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.top = '0';
-                      e.currentTarget.style.boxShadow = '0 2px 0 #1976D2';
-                    }}
+                    onMouseDown={handleButtonPress}
+                    onMouseUp={handleButtonRelease}
+                    onMouseLeave={handleButtonRelease}
+                    onTouchStart={handleButtonPress}
+                    onTouchEnd={handleButtonRelease}
                   >
                     Make {isAttackerFocus ? 'Defender' : 'Attacker'}
                   </button>
@@ -525,18 +521,11 @@ function App() {
               boxShadow: '0 6px 0 #45a049',
               transition: 'all 0.1s ease',
             }}
-            onMouseDown={(e) => {
-              e.currentTarget.style.top = '4px';
-              e.currentTarget.style.boxShadow = '0 2px 0 #45a049';
-            }}
-            onMouseUp={(e) => {
-              e.currentTarget.style.top = '0';
-              e.currentTarget.style.boxShadow = '0 6px 0 #45a049';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.top = '0';
-              e.currentTarget.style.boxShadow = '0 6px 0 #45a049';
-            }}
+            onMouseDown={handleButtonPress}
+            onMouseUp={handleButtonRelease}
+            onMouseLeave={handleButtonRelease}
+            onTouchStart={handleButtonPress}
+            onTouchEnd={handleButtonRelease}
           >
             <FaExchangeAlt style={{ marginRight: '5px' }} /> Swap
           </button>
@@ -571,18 +560,11 @@ function App() {
                   onClick={() => handleEffectivenessClick(value === '1/2' ? 0.5 : value)} 
                   disabled={!!feedback}
                   style={buttonStyle(effectivenessColors[value].background, effectivenessColors[value].text)}
-                  onMouseDown={(e) => {
-                    e.currentTarget.style.top = '4px';
-                    e.currentTarget.style.boxShadow = `0 2px 0 ${darkenColor(effectivenessColors[value].background, 20)}`;
-                  }}
-                  onMouseUp={(e) => {
-                    e.currentTarget.style.top = '0';
-                    e.currentTarget.style.boxShadow = `0 6px 0 ${darkenColor(effectivenessColors[value].background, 20)}`;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.top = '0';
-                    e.currentTarget.style.boxShadow = `0 6px 0 ${darkenColor(effectivenessColors[value].background, 20)}`;
-                  }}
+                  onMouseDown={handleButtonPress}
+                  onMouseUp={handleButtonRelease}
+                  onMouseLeave={handleButtonRelease}
+                  onTouchStart={handleButtonPress}
+                  onTouchEnd={handleButtonRelease}
                 >
                   {effectivenessDisplay[value]}
                 </button>
@@ -620,18 +602,11 @@ function App() {
                   padding: '10px 20px',
                   marginTop: '10px',
                 }}
-                onMouseDown={(e) => {
-                  e.currentTarget.style.top = '4px';
-                  e.currentTarget.style.boxShadow = `0 2px 0 ${darkenColor('#2196F3', 20)}`;
-                }}
-                onMouseUp={(e) => {
-                  e.currentTarget.style.top = '0';
-                  e.currentTarget.style.boxShadow = `0 6px 0 ${darkenColor('#2196F3', 20)}`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.top = '0';
-                  e.currentTarget.style.boxShadow = `0 6px 0 ${darkenColor('#2196F3', 20)}`;
-                }}
+                onMouseDown={handleButtonPress}
+                onMouseUp={handleButtonRelease}
+                onMouseLeave={handleButtonRelease}
+                onTouchStart={handleButtonPress}
+                onTouchEnd={handleButtonRelease}
               >
                 Continue
               </button>
