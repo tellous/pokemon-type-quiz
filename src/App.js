@@ -138,25 +138,49 @@ function App() {
     2: "2"
   };
 
-  const buttonStyle = (backgroundColor, textColor) => ({
-    flexGrow: 0,
-    flexShrink: 0,
-    width: '60px',
-    height: '60px',
-    fontSize: '1.2em',
-    fontWeight: 'bold',
-    backgroundColor: backgroundColor,
-    color: textColor,
-    border: 'none',
-    borderRadius: '10px',
-    cursor: 'pointer',
-    transition: 'all 0.1s ease',
-    margin: '0 5px',
-    position: 'relative',
-    top: 0,
-    boxShadow: `0 6px 0 ${darkenColor(backgroundColor, 20)}`,
-    outline: 'none',
-  });
+  const buttonStyle = (backgroundColor, textColor) => {
+    const shadowColor = darkenColor(backgroundColor, 20);
+    return {
+      flexGrow: 0,
+      flexShrink: 0,
+      width: '60px',
+      height: '60px',
+      fontSize: '1.2em',
+      fontWeight: 'bold',
+      backgroundColor: backgroundColor,
+      color: textColor,
+      border: 'none',
+      borderRadius: '10px',
+      cursor: 'pointer',
+      transition: 'all 0.1s ease',
+      margin: '0 5px',
+      position: 'relative',
+      top: 0,
+      boxShadow: `0 6px 0 ${shadowColor}`,
+      outline: 'none',
+    };
+  };
+
+  const smallButtonStyle = (backgroundColor) => {
+    const shadowColor = darkenColor(backgroundColor, 20);
+    return {
+      width: 'auto',
+      height: '24px',
+      fontSize: '0.8em',
+      fontWeight: 'bold',
+      backgroundColor: backgroundColor,
+      color: 'white',
+      border: 'none',
+      borderRadius: '3px',
+      cursor: 'pointer',
+      transition: 'all 0.1s ease',
+      position: 'relative',
+      top: 0,
+      boxShadow: `0 2px 0 ${shadowColor}`,
+      outline: 'none',
+      padding: '0 8px',
+    };
+  };
 
   const darkenColor = (color, amount) => {
     return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) - amount)).toString(16)).substr(-2));
@@ -205,28 +229,24 @@ function App() {
 
   const handleContinue = () => {
     if (isAttackerMode) {
+      // Cycle through defenders (top type)
       const nextDefenderIndex = (types.indexOf(topType) + 1) % types.length;
       setTopType(types[nextDefenderIndex]);
+      // Set attacker (bottom type) to focus type if attacker focus, otherwise random
       if (focusType && isAttackerFocus) {
         setBottomType(focusType);
       } else {
-        let newAttackerType;
-        do {
-          newAttackerType = getRandomType();
-        } while (newAttackerType === bottomType);
-        setBottomType(newAttackerType);
+        setBottomType(getRandomType(bottomType));
       }
     } else {
+      // Cycle through defenders (bottom type)
       const nextDefenderIndex = (types.indexOf(bottomType) + 1) % types.length;
       setBottomType(types[nextDefenderIndex]);
-      if (focusType && !isAttackerFocus) {
+      // Set attacker (top type) to focus type if attacker focus, otherwise random
+      if (focusType && isAttackerFocus) {
         setTopType(focusType);
       } else {
-        let newAttackerType;
-        do {
-          newAttackerType = getRandomType();
-        } while (newAttackerType === topType);
-        setTopType(newAttackerType);
+        setTopType(getRandomType(topType));
       }
     }
     setFeedback('');
@@ -295,38 +315,34 @@ function App() {
     Total: '📝'
   };
 
-  const smallButtonStyle = {
-    width: 'auto',
-    height: '24px',
-    fontSize: '0.8em',
-    fontWeight: 'bold',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    transition: 'all 0.1s ease',
-    position: 'relative',
-    top: 0,
-    outline: 'none',
-    padding: '0 8px',
-  };
-
   const handleSwap = () => {
-    setIsAttackerMode(!isAttackerMode);
+    setIsAttackerMode(prevMode => !prevMode);
     setTopType(bottomType);
     setBottomType(topType);
     setFeedback('');
     setTopTooltipVisible(false);
     setBottomTooltipVisible(false);
+
+    // Maintain focus when swapping
+    if (focusType) {
+      if (isAttackerFocus) {
+        // If focus is on attacker, move it to the other side
+        setBottomType(focusType);
+      } else {
+        // If focus is on defender, move it to the other side
+        setTopType(focusType);
+      }
+    }
   };
 
-  const handleButtonPress = (e) => {
+  const handleButtonPress = (e, shadowColor) => {
     e.currentTarget.style.top = '4px';
-    e.currentTarget.style.boxShadow = '0 2px 0 #d32f2f';
+    e.currentTarget.style.boxShadow = `0 2px 0 ${shadowColor}`;
   };
 
-  const handleButtonRelease = (e) => {
+  const handleButtonRelease = (e, shadowColor) => {
     e.currentTarget.style.top = '0';
-    e.currentTarget.style.boxShadow = '0 6px 0 #d32f2f';
+    e.currentTarget.style.boxShadow = `0 6px 0 ${shadowColor}`;
   };
 
   return (
@@ -445,33 +461,23 @@ function App() {
                 <>
                   <button
                     onClick={clearFocus}
-                    style={{
-                      ...smallButtonStyle,
-                      backgroundColor: '#f44336',
-                      color: 'white',
-                      boxShadow: '0 2px 0 #d32f2f',
-                    }}
-                    onMouseDown={handleButtonPress}
-                    onMouseUp={handleButtonRelease}
-                    onMouseLeave={handleButtonRelease}
-                    onTouchStart={handleButtonPress}
-                    onTouchEnd={handleButtonRelease}
+                    style={smallButtonStyle('#f44336')}
+                    onMouseDown={(e) => handleButtonPress(e, '#d32f2f')}
+                    onMouseUp={(e) => handleButtonRelease(e, '#d32f2f')}
+                    onMouseLeave={(e) => handleButtonRelease(e, '#d32f2f')}
+                    onTouchStart={(e) => handleButtonPress(e, '#d32f2f')}
+                    onTouchEnd={(e) => handleButtonRelease(e, '#d32f2f')}
                   >
                     Clear
                   </button>
                   <button
                     onClick={toggleFocusMode}
-                    style={{
-                      ...smallButtonStyle,
-                      backgroundColor: '#2196F3',
-                      color: 'white',
-                      boxShadow: '0 2px 0 #1976D2',
-                    }}
-                    onMouseDown={handleButtonPress}
-                    onMouseUp={handleButtonRelease}
-                    onMouseLeave={handleButtonRelease}
-                    onTouchStart={handleButtonPress}
-                    onTouchEnd={handleButtonRelease}
+                    style={smallButtonStyle('#2196F3')}
+                    onMouseDown={(e) => handleButtonPress(e, '#1976D2')}
+                    onMouseUp={(e) => handleButtonRelease(e, '#1976D2')}
+                    onMouseLeave={(e) => handleButtonRelease(e, '#1976D2')}
+                    onTouchStart={(e) => handleButtonPress(e, '#1976D2')}
+                    onTouchEnd={(e) => handleButtonRelease(e, '#1976D2')}
                   >
                     Make {isAttackerFocus ? 'Defender' : 'Attacker'}
                   </button>
@@ -515,17 +521,16 @@ function App() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              // Add the following styles for 3D effect
               position: 'relative',
               top: 0,
               boxShadow: '0 6px 0 #45a049',
               transition: 'all 0.1s ease',
             }}
-            onMouseDown={handleButtonPress}
-            onMouseUp={handleButtonRelease}
-            onMouseLeave={handleButtonRelease}
-            onTouchStart={handleButtonPress}
-            onTouchEnd={handleButtonRelease}
+            onMouseDown={(e) => handleButtonPress(e, '#45a049')}
+            onMouseUp={(e) => handleButtonRelease(e, '#45a049')}
+            onMouseLeave={(e) => handleButtonRelease(e, '#45a049')}
+            onTouchStart={(e) => handleButtonPress(e, '#45a049')}
+            onTouchEnd={(e) => handleButtonRelease(e, '#45a049')}
           >
             <FaExchangeAlt style={{ marginRight: '5px' }} /> Swap
           </button>
@@ -554,21 +559,25 @@ function App() {
               width: '100%',
               maxWidth: '400px', // Adjust this value as needed
             }}>
-              {[0, '1/2', 1, 2].map((value) => (
-                <button 
-                  key={value} 
-                  onClick={() => handleEffectivenessClick(value === '1/2' ? 0.5 : value)} 
-                  disabled={!!feedback}
-                  style={buttonStyle(effectivenessColors[value].background, effectivenessColors[value].text)}
-                  onMouseDown={handleButtonPress}
-                  onMouseUp={handleButtonRelease}
-                  onMouseLeave={handleButtonRelease}
-                  onTouchStart={handleButtonPress}
-                  onTouchEnd={handleButtonRelease}
-                >
-                  {effectivenessDisplay[value]}
-                </button>
-              ))}
+              {[0, '1/2', 1, 2].map((value) => {
+                const bgColor = effectivenessColors[value].background;
+                const shadowColor = darkenColor(bgColor, 20);
+                return (
+                  <button 
+                    key={value} 
+                    onClick={() => handleEffectivenessClick(value === '1/2' ? 0.5 : value)} 
+                    disabled={!!feedback}
+                    style={buttonStyle(bgColor, effectivenessColors[value].text)}
+                    onMouseDown={(e) => handleButtonPress(e, shadowColor)}
+                    onMouseUp={(e) => handleButtonRelease(e, shadowColor)}
+                    onMouseLeave={(e) => handleButtonRelease(e, shadowColor)}
+                    onTouchStart={(e) => handleButtonPress(e, shadowColor)}
+                    onTouchEnd={(e) => handleButtonRelease(e, shadowColor)}
+                  >
+                    {effectivenessDisplay[value]}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -602,11 +611,11 @@ function App() {
                   padding: '10px 20px',
                   marginTop: '10px',
                 }}
-                onMouseDown={handleButtonPress}
-                onMouseUp={handleButtonRelease}
-                onMouseLeave={handleButtonRelease}
-                onTouchStart={handleButtonPress}
-                onTouchEnd={handleButtonRelease}
+                onMouseDown={(e) => handleButtonPress(e, '#1976D2')}
+                onMouseUp={(e) => handleButtonRelease(e, '#1976D2')}
+                onMouseLeave={(e) => handleButtonRelease(e, '#1976D2')}
+                onTouchStart={(e) => handleButtonPress(e, '#1976D2')}
+                onTouchEnd={(e) => handleButtonRelease(e, '#1976D2')}
               >
                 Continue
               </button>
