@@ -454,7 +454,7 @@ function App() {
                   <>
                     <span>{types[focusTypeIndex - 1]}</span>
                     <span style={{ marginLeft: '5px', fontSize: '0.8em', opacity: 0.8 }}>
-                      ({isAttackerFocus ? 'Attacker' : 'Defender'})
+                      ({isAttackerFocus ? '⚔️ Attacker' : '🛡️ Defender'})
                     </span>
                   </>
                 )}
@@ -487,7 +487,7 @@ function App() {
                     onTouchStart={(e) => handleButtonPress(e, '#1976D2')}
                     onTouchEnd={(e) => handleButtonRelease(e, '#1976D2')}
                   >
-                    Make {isAttackerFocus ? 'Defender' : 'Attacker'}
+                    Make {isAttackerFocus ? '🛡️ Defender' : '⚔️ Attacker'}
                   </button>
                 </>
               )}
@@ -501,7 +501,7 @@ function App() {
             position: 'relative',
           }}>
             <h2 style={{fontSize: '1.2em', margin: '0 0 10px 0'}}>
-              {isAttackerMode ? 'Defender' : 'Attacker'}
+              {isAttackerMode ? '🛡️ Defender' : '⚔️ Attacker'}
             </h2>
             <div className="type-color" style={typeContainerStyle(topType)}>
               <span style={emojiStyle(topType)}>{typeEmojis[topType]}</span>
@@ -549,7 +549,7 @@ function App() {
             position: 'relative',
           }}>
             <h2 style={{fontSize: '1.2em', margin: '0 0 10px 0'}}>
-              {isAttackerMode ? 'Attacker' : 'Defender'}
+              {isAttackerMode ? '⚔️ Attacker' : '🛡️ Defender'}
             </h2>
             <div className="type-color" style={typeContainerStyle(bottomType)}>
               <span style={emojiStyle(bottomType)}>{typeEmojis[bottomType]}</span>
