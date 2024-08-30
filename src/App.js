@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './App.css';
-import { FaExchangeAlt, FaChevronLeft, FaChevronRight, FaTimes } from 'react-icons/fa';
+import { FaExchangeAlt, FaChevronLeft, FaChevronRight, FaTimes, FaInfoCircle, FaCog } from 'react-icons/fa';
+import correctSound from './sounds/correct-sound.mp3';
+import incorrectSound from './sounds/incorrect-sound.mp3';
+import clickSound from './sounds/click-sound.mp3';
+import CustomSlider from './components/CustomSlider';
 
 function App() {
   const types = ['Normal', 'Fire', 'Water', 'Electric', 'Grass', 'Ice', 'Fighting', 'Poison', 'Ground', 'Flying', 'Psychic', 'Bug', 'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy'];
@@ -22,6 +26,16 @@ function App() {
   const [totalQuestions, setTotalQuestions] = useState(() => {
     const savedTotalQuestions = localStorage.getItem('totalQuestions');
     return savedTotalQuestions ? parseInt(savedTotalQuestions, 10) : 0;
+  });
+  const [isMuted, setIsMuted] = useState(() => {
+    const savedMuteState = localStorage.getItem('isMuted');
+    return savedMuteState ? JSON.parse(savedMuteState) : false;
+  });
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [volume, setVolume] = useState(() => {
+    const savedVolume = localStorage.getItem('volume');
+    return savedVolume ? parseFloat(savedVolume) : 1;
   });
 
   const typeColors = {
@@ -53,10 +67,10 @@ function App() {
   };
 
   const effectivenessColors = {
-    0: { background: '#36454F', text: '#ffffff' },    // Charcoal with white text
-    '1/2': { background: '#ff0000', text: '#ffffff' },  // Red with white text
-    1: { background: '#ffffff', text: '#000000' },    // White with black text
-    2: { background: '#00ff00', text: '#000000' },    // Green with black text
+    0: { background: '#36454F', text: '#FFFFFF' },    // Charcoal theme, white text
+    '1/2': { background: '#FF0000', text: '#FFFFFF' }, // Red theme, white text
+    1: { background: '#F0EAD6', text: '#000000' },    // Eggshell theme, black text
+    2: { background: '#008000', text: '#000000' }     // Green theme, black text
   };
 
   const [topTooltipVisible, setTopTooltipVisible] = useState(false);
@@ -95,6 +109,8 @@ function App() {
         zIndex: 1000,
         textAlign: 'center',
         fontFamily: "'Nunito', sans-serif",
+        width: '90%', // Increased width
+        maxWidth: '300px', // Added max-width for larger screens
       }}>
         <p style={{ margin: '0 0 5px 0' }}>
           <span style={typeStyle(attacker)}>{typeEmojis[attacker]} {attacker}</span>
@@ -141,53 +157,77 @@ function App() {
     2: "2"
   };
 
-  const buttonStyle = (backgroundColor, textColor) => {
-    const shadowColor = darkenColor(backgroundColor, 20);
-    return {
-      flexGrow: 0,
-      flexShrink: 0,
-      width: '60px',
-      height: '60px',
-      fontSize: '1.2em',
-      fontWeight: 'bold',
-      backgroundColor: backgroundColor,
-      color: textColor,
-      border: 'none',
-      borderRadius: '10px',
-      cursor: 'pointer',
-      transition: 'all 0.1s ease',
-      margin: '0 5px',
-      position: 'relative',
-      top: 0,
-      boxShadow: `0 6px 0 ${shadowColor}`,
-      outline: 'none',
-      fontFamily: "'Nunito', sans-serif",
-    };
+  const darkenColor = (color, amount) => {
+    return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) - amount)).toString(16)).substr(-2));
   };
 
   const smallButtonStyle = (backgroundColor) => {
     const shadowColor = darkenColor(backgroundColor, 20);
     return {
-      width: 'auto',
-      height: '24px',
-      fontSize: '0.8em',
+      width: '40px',
+      height: '40px',
+      fontSize: '1.2em',
       fontWeight: 'bold',
       backgroundColor: backgroundColor,
       color: 'white',
       border: 'none',
-      borderRadius: '3px',
+      borderRadius: '5px',
       cursor: 'pointer',
       transition: 'all 0.1s ease',
       position: 'relative',
       top: 0,
-      boxShadow: `0 2px 0 ${shadowColor}`,
+      boxShadow: `0 6px 0 ${shadowColor}`,
       outline: 'none',
-      padding: '0 8px',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
     };
   };
 
-  const darkenColor = (color, amount) => {
-    return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) - amount)).toString(16)).substr(-2));
+  const effectivenessButtonStyle = (backgroundColor, textColor) => {
+    const shadowColor = darkenColor(backgroundColor, 20);
+    return {
+      width: '50px',
+      height: '50px',
+      fontSize: '1.4em',
+      fontWeight: 'bold',
+      backgroundColor: backgroundColor,
+      color: textColor,
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      transition: 'all 0.1s ease',
+      position: 'relative',
+      top: 0,
+      boxShadow: `0 6px 0 ${shadowColor}`,
+      outline: 'none',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    };
+  };
+
+  const playClickSound = useCallback(() => {
+    if (!isMuted) {
+      const audio = new Audio(clickSound);
+      audio.volume = volume;
+      audio.play()
+        .then(() => console.log("Click sound played successfully"))
+        .catch(error => console.error("Error playing click sound:", error));
+    }
+  }, [isMuted, volume]);
+
+  const handleButtonPress = (e, shadowColor, playClick = true) => {
+    e.currentTarget.style.top = '4px';
+    e.currentTarget.style.boxShadow = `0 2px 0 ${shadowColor}`;
+    if (playClick && !isMuted) {
+      playClickSound();
+    }
+  };
+
+  const handleButtonRelease = (e, shadowColor) => {
+    e.currentTarget.style.top = '0';
+    e.currentTarget.style.boxShadow = `0 6px 0 ${shadowColor}`;
   };
 
   useEffect(() => {
@@ -202,12 +242,45 @@ function App() {
     localStorage.setItem('totalQuestions', totalQuestions.toString());
   }, [totalQuestions]);
 
+  useEffect(() => {
+    localStorage.setItem('volume', volume.toString());
+  }, [volume]);
+
+  useEffect(() => {
+    localStorage.setItem('isMuted', JSON.stringify(isMuted));
+  }, [isMuted]);
+
   const resetGame = () => {
     setTopType(getRandomType());
     setBottomType(types[0]);
     setFeedback('');
     setCurrentStreak(0);
   };
+
+  const toggleMute = () => {
+    setIsMuted(prev => {
+      const newMuteState = !prev;
+      if (prev) {
+        // If we're unmuting, play the click sound
+        playClickSound();
+      }
+      return newMuteState;
+    });
+  };
+
+  const playSound = useCallback((isCorrect) => {
+    console.log(`Attempting to play ${isCorrect ? 'correct' : 'incorrect'} sound`);
+    
+    if (!isMuted) {
+      const audio = new Audio(isCorrect ? correctSound : incorrectSound);
+      audio.volume = volume;
+      audio.play()
+        .then(() => console.log("Sound played successfully"))
+        .catch(error => console.error("Error playing sound:", error));
+    } else {
+      console.log("Sound is muted");
+    }
+  }, [isMuted, volume]);
 
   const handleEffectivenessClick = (effectiveness) => {
     const attacker = isAttackerMode ? bottomType : topType;
@@ -219,6 +292,7 @@ function App() {
     setBottomTooltipVisible(false);
     
     if (effectiveness === correctEffectivenessValue) {
+      playSound(true);  // Play correct sound
       setFeedback('Correct!');
       const newStreak = currentStreak + 1;
       setCurrentStreak(newStreak);
@@ -226,6 +300,7 @@ function App() {
         setHighestStreak(newStreak);
       }
     } else {
+      playSound(false);  // Play incorrect sound
       setFeedback(`Incorrect.\nThe correct answer was ${correctEffectivenessValue === 0.5 ? '½' : correctEffectivenessValue}x`);
       setCurrentStreak(0);
     }
@@ -347,14 +422,52 @@ function App() {
     }
   };
 
-  const handleButtonPress = (e, shadowColor) => {
-    e.currentTarget.style.top = '4px';
-    e.currentTarget.style.boxShadow = `0 2px 0 ${shadowColor}`;
+  const largeButtonStyle = (backgroundColor) => {
+    const shadowColor = darkenColor(backgroundColor, 20);
+    return {
+      width: '200px',
+      height: '60px',
+      fontSize: '1.2em',
+      fontWeight: 'bold',
+      backgroundColor: backgroundColor,
+      color: 'white',
+      border: 'none',
+      borderRadius: '10px',
+      cursor: 'pointer',
+      transition: 'all 0.1s ease',
+      position: 'relative',
+      top: 0,
+      boxShadow: `0 6px 0 ${shadowColor}`,
+      outline: 'none',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      margin: '10px 0',
+    };
   };
 
-  const handleButtonRelease = (e, shadowColor) => {
-    e.currentTarget.style.top = '0';
-    e.currentTarget.style.boxShadow = `0 6px 0 ${shadowColor}`;
+  const mediumButtonStyle = (backgroundColor) => {
+    const shadowColor = darkenColor(backgroundColor, 20);
+    return {
+      width: '120px',
+      height: '50px',
+      fontSize: '1em',
+      fontWeight: 'bold',
+      backgroundColor: backgroundColor,
+      color: 'white',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      transition: 'all 0.1s ease',
+      position: 'relative',
+      top: 0,
+      boxShadow: `0 4px 0 ${shadowColor}`,
+      outline: 'none',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      margin: '5px',
+    };
   };
 
   return (
@@ -390,7 +503,9 @@ function App() {
           <div style={{
             marginBottom: '10px',
             width: '100%',
-            textAlign: 'center',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}>
             <h1 style={{
               fontSize: '1.2em',
@@ -400,103 +515,68 @@ function App() {
               fontWeight: 'normal',
               fontFamily: "'Pocket Monk', sans-serif",
               letterSpacing: '1px',
+              textAlign: 'left',
             }}>
               Pokémon Type Quiz
             </h1>
-            <div style={{ 
+            <div style={{
               display: 'flex',
-              justifyContent: 'space-between',
-              fontSize: '0.9em',
-              marginTop: '15px',
+              alignItems: 'center',
+              gap: '10px',
             }}>
-              {[
-                { label: 'Highest', value: highestStreak },
-                { label: 'Current', value: currentStreak },
-                { label: 'Total', value: totalQuestions }
-              ].map(({ label, value }) => (
-                <div key={label} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                }}>
-                  <span style={{ marginRight: '5px' }}>{scoreEmojis[label]}</span>
-                  <span style={{ fontWeight: 'bold' }}>{formatNumber(value)}</span>
-                </div>
-              ))}
+              <button
+                onClick={() => setShowSettingsModal(true)}
+                style={smallButtonStyle('#4CAF50')}
+                onMouseDown={(e) => handleButtonPress(e, '#45a049')}
+                onMouseUp={(e) => handleButtonRelease(e, '#45a049')}
+                onMouseLeave={(e) => handleButtonRelease(e, '#45a049')}
+                onTouchStart={(e) => handleButtonPress(e, '#45a049')}
+                onTouchEnd={(e) => handleButtonRelease(e, '#45a049')}
+              >
+                <FaCog />
+              </button>
+              <button
+                onClick={() => setShowInfoModal(true)}
+                style={smallButtonStyle('#2196F3')}
+                onMouseDown={(e) => handleButtonPress(e, '#1976D2')}
+                onMouseUp={(e) => handleButtonRelease(e, '#1976D2')}
+                onMouseLeave={(e) => handleButtonRelease(e, '#1976D2')}
+                onTouchStart={(e) => handleButtonPress(e, '#1976D2')}
+                onTouchEnd={(e) => handleButtonRelease(e, '#1976D2')}
+              >
+                <FaInfoCircle />
+              </button>
             </div>
           </div>
 
+          {/* Score section */}
           <div style={{
-            width: '100%',
-            marginBottom: '10px',
             display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            justifyContent: 'space-around',
+            marginBottom: '20px',
+            width: '100%',
+            fontFamily: "'Nunito', sans-serif",
           }}>
-            <div style={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '10px',
-            }}>
-              <FaChevronLeft 
-                onClick={() => handleFocusChange(-1)} 
-                style={{ cursor: 'pointer', flex: '0 0 auto' }}
-              />
-              <div style={{ 
-                flex: '1 1 auto', 
+            {['Highest', 'Current', 'Total'].map((label) => (
+              <div key={label} style={{
                 textAlign: 'center',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                padding: '0 10px',
+                flex: 1,
                 display: 'flex',
-                justifyContent: 'center',
+                flexDirection: 'column',
                 alignItems: 'center',
-                fontFamily: "'Nunito', sans-serif",
               }}>
-                <span>Focus: {focusTypeIndex === 0 ? 'None' : (
-                  <>
-                    <span>{types[focusTypeIndex - 1]}</span>
-                    <span style={{ marginLeft: '5px', fontSize: '0.8em', opacity: 0.8 }}>
-                      ({isAttackerFocus ? '⚔️ Attacker' : '🛡️ Defender'})
-                    </span>
-                  </>
-                )}</span>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                }}>
+                  <span style={{fontSize: '1.2em'}}>{scoreEmojis[label]}</span>
+                  <p style={{margin: '0', fontSize: '1.2em', fontWeight: 'bold'}}>
+                    {formatNumber(label === 'Highest' ? highestStreak : label === 'Current' ? currentStreak : totalQuestions)}
+                  </p>
+                </div>
               </div>
-              <FaChevronRight 
-                onClick={() => handleFocusChange(1)} 
-                style={{ cursor: 'pointer', flex: '0 0 auto' }}
-              />
-            </div>
-            <div style={{ height: '30px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              {focusTypeIndex !== 0 && (
-                <>
-                  <button
-                    onClick={clearFocus}
-                    style={{...smallButtonStyle('#f44336'), fontFamily: "'Nunito', sans-serif"}}
-                    onMouseDown={(e) => handleButtonPress(e, '#d32f2f')}
-                    onMouseUp={(e) => handleButtonRelease(e, '#d32f2f')}
-                    onMouseLeave={(e) => handleButtonRelease(e, '#d32f2f')}
-                    onTouchStart={(e) => handleButtonPress(e, '#d32f2f')}
-                    onTouchEnd={(e) => handleButtonRelease(e, '#d32f2f')}
-                  >
-                    Clear
-                  </button>
-                  <button
-                    onClick={toggleFocusMode}
-                    style={{...smallButtonStyle('#2196F3'), fontFamily: "'Nunito', sans-serif"}}
-                    onMouseDown={(e) => handleButtonPress(e, '#1976D2')}
-                    onMouseUp={(e) => handleButtonRelease(e, '#1976D2')}
-                    onMouseLeave={(e) => handleButtonRelease(e, '#1976D2')}
-                    onTouchStart={(e) => handleButtonPress(e, '#1976D2')}
-                    onTouchEnd={(e) => handleButtonRelease(e, '#1976D2')}
-                  >
-                    Make {isAttackerFocus ? '🛡️ Defender' : '⚔️ Attacker'}
-                  </button>
-                </>
-              )}
-            </div>
+            ))}
           </div>
 
           <div className="top-section" style={{
@@ -573,30 +653,40 @@ function App() {
             {bottomTooltipVisible && <Tooltip attacker={isAttackerMode ? bottomType : topType} defender={isAttackerMode ? topType : bottomType} />}
             <div style={{ 
               display: 'flex', 
-              justifyContent: 'center', 
+              justifyContent: 'center', // Changed to 'center'
+              alignItems: 'center', // Added to ensure vertical centering
               marginTop: '15px',
               width: '100%',
-              maxWidth: '400px', // Adjust this value as needed
             }}>
-              {[0, '1/2', 1, 2].map((value) => {
-                const bgColor = effectivenessColors[value].background;
-                const shadowColor = darkenColor(bgColor, 20);
-                return (
-                  <button 
-                    key={value} 
-                    onClick={() => handleEffectivenessClick(value === '1/2' ? 0.5 : value)} 
-                    disabled={!!feedback}
-                    style={{...buttonStyle(bgColor, effectivenessColors[value].text), fontFamily: "'Nunito', sans-serif"}}
-                    onMouseDown={(e) => handleButtonPress(e, shadowColor)}
-                    onMouseUp={(e) => handleButtonRelease(e, shadowColor)}
-                    onMouseLeave={(e) => handleButtonRelease(e, shadowColor)}
-                    onTouchStart={(e) => handleButtonPress(e, shadowColor)}
-                    onTouchEnd={(e) => handleButtonRelease(e, shadowColor)}
-                  >
-                    {effectivenessDisplay[value]}
-                  </button>
-                );
-              })}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                width: '100%',
+                maxWidth: '300px', // Adjust this value as needed
+              }}>
+                {[0, '1/2', 1, 2].map((value) => {
+                  const { background, text } = effectivenessColors[value];
+                  const shadowColor = darkenColor(background, 20);
+                  return (
+                    <button 
+                      key={value} 
+                      onClick={() => handleEffectivenessClick(value === '1/2' ? 0.5 : value)} 
+                      disabled={!!feedback}
+                      style={{
+                        ...effectivenessButtonStyle(background, text),
+                        color: text, // Ensure text color is applied
+                      }}
+                      onMouseDown={(e) => handleButtonPress(e, shadowColor, false)}
+                      onMouseUp={(e) => handleButtonRelease(e, shadowColor)}
+                      onMouseLeave={(e) => handleButtonRelease(e, shadowColor)}
+                      onTouchStart={(e) => handleButtonPress(e, shadowColor, false)}
+                      onTouchEnd={(e) => handleButtonRelease(e, shadowColor)}
+                    >
+                      {effectivenessDisplay[value]}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
@@ -625,7 +715,7 @@ function App() {
               <button 
                 onClick={handleContinue}
                 style={{
-                  ...buttonStyle('#2196F3', 'white'),
+                  ...smallButtonStyle('#2196F3'),
                   width: 'auto',
                   padding: '10px 20px',
                   marginTop: '10px',
@@ -641,25 +731,253 @@ function App() {
               </button>
             )}
           </div>
+        </div>
+      </div>
 
+      {/* Settings Modal */}
+      {showSettingsModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000,
+        }}>
           <div style={{
-            position: 'absolute',
-            bottom: '10px',
-            left: '0',
-            right: '0',
-            textAlign: 'center',
+            backgroundColor: 'white',
+            padding: '30px',
+            borderRadius: '15px',
+            width: '90%',
+            maxWidth: '340px', // Adjusted to match the outermost container
+            maxHeight: '90%',
+            overflow: 'auto',
+            color: 'black',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
           }}>
+            <h2 style={{ fontSize: '1.8em', marginBottom: '20px' }}>Settings</h2>
+            
+            {/* Sound Settings */}
+            <button 
+              onClick={toggleMute} 
+              style={largeButtonStyle(isMuted ? '#f44336' : '#4CAF50')}
+              onMouseDown={(e) => handleButtonPress(e, isMuted ? '#d32f2f' : '#45a049', false)}
+              onMouseUp={(e) => handleButtonRelease(e, isMuted ? '#d32f2f' : '#45a049')}
+              onMouseLeave={(e) => handleButtonRelease(e, isMuted ? '#d32f2f' : '#45a049')}
+              onTouchStart={(e) => handleButtonPress(e, isMuted ? '#d32f2f' : '#45a049', false)}
+              onTouchEnd={(e) => handleButtonRelease(e, isMuted ? '#d32f2f' : '#45a049')}
+            >
+              {isMuted ? '🔇 Sound Off' : '🔊 Sound On'}
+            </button>
+
+            {/* Volume Slider - only show when sound is on */}
+            {!isMuted && (
+              <div style={{
+                width: '100%',
+                marginTop: '20px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}>
+                <div style={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '15px',
+                }}>
+                  <span style={{ marginRight: '15px' }}>Volume:</span>
+                  <div style={{ 
+                    flex: 1,
+                    maxWidth: '200px',
+                  }}>
+                    <CustomSlider
+                      value={volume}
+                      onChange={setVolume}
+                    />
+                  </div>
+                </div>
+                <div style={{ textAlign: 'center', marginTop: '10px' }}>
+                  {Math.round(volume * 100)}%
+                </div>
+              </div>
+            )}
+
+            {/* Focus Settings */}
+            <div style={{
+              width: '100%',
+              marginTop: '20px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}>
+              <div style={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '10px',
+              }}>
+                <button
+                  onClick={() => handleFocusChange(-1)}
+                  style={{...mediumButtonStyle('#FFD700'), width: '50px', color: 'black'}}
+                  onMouseDown={(e) => handleButtonPress(e, '#DAA520')}
+                  onMouseUp={(e) => handleButtonRelease(e, '#DAA520')}
+                  onMouseLeave={(e) => handleButtonRelease(e, '#DAA520')}
+                  onTouchStart={(e) => handleButtonPress(e, '#DAA520')}
+                  onTouchEnd={(e) => handleButtonRelease(e, '#DAA520')}
+                >
+                  <FaChevronLeft />
+                </button>
+                <div style={{ 
+                  flex: '1 1 auto', 
+                  textAlign: 'center',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  padding: '0 10px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  fontFamily: "'Nunito', sans-serif",
+                  fontSize: '1.2em',
+                }}>
+                  <span>Focus</span>
+                  {focusTypeIndex === 0 ? (
+                    <span style={{ fontSize: '0.9em', opacity: 0.8 }}>None</span>
+                  ) : (
+                    <>
+                      <span>{types[focusTypeIndex - 1]}</span>
+                      <span style={{ fontSize: '0.8em', opacity: 0.8 }}>
+                        ({isAttackerFocus ? '⚔️ Attacker' : '🛡️ Defender'})
+                      </span>
+                    </>
+                  )}
+                </div>
+                <button
+                  onClick={() => handleFocusChange(1)}
+                  style={{...mediumButtonStyle('#FFD700'), width: '50px', color: 'black'}}
+                  onMouseDown={(e) => handleButtonPress(e, '#DAA520')}
+                  onMouseUp={(e) => handleButtonRelease(e, '#DAA520')}
+                  onMouseLeave={(e) => handleButtonRelease(e, '#DAA520')}
+                  onTouchStart={(e) => handleButtonPress(e, '#DAA520')}
+                  onTouchEnd={(e) => handleButtonRelease(e, '#DAA520')}
+                >
+                  <FaChevronRight />
+                </button>
+              </div>
+              {focusTypeIndex !== 0 && (
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+                  <button
+                    onClick={clearFocus}
+                    style={mediumButtonStyle('#f44336')}
+                    onMouseDown={(e) => handleButtonPress(e, '#d32f2f')}
+                    onMouseUp={(e) => handleButtonRelease(e, '#d32f2f')}
+                    onMouseLeave={(e) => handleButtonRelease(e, '#d32f2f')}
+                    onTouchStart={(e) => handleButtonPress(e, '#d32f2f')}
+                    onTouchEnd={(e) => handleButtonRelease(e, '#d32f2f')}
+                  >
+                    Clear Focus
+                  </button>
+                  <button
+                    onClick={toggleFocusMode}
+                    style={mediumButtonStyle('#2196F3')}
+                    onMouseDown={(e) => handleButtonPress(e, '#1976D2')}
+                    onMouseUp={(e) => handleButtonRelease(e, '#1976D2')}
+                    onMouseLeave={(e) => handleButtonRelease(e, '#1976D2')}
+                    onTouchStart={(e) => handleButtonPress(e, '#1976D2')}
+                    onTouchEnd={(e) => handleButtonRelease(e, '#1976D2')}
+                  >
+                    Make {isAttackerFocus ? '🛡️ Defender' : '⚔️ Attacker'}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={() => setShowSettingsModal(false)}
+              style={{...largeButtonStyle('#f44336'), marginTop: '30px'}}
+              onMouseDown={(e) => handleButtonPress(e, '#d32f2f')}
+              onMouseUp={(e) => handleButtonRelease(e, '#d32f2f')}
+              onMouseLeave={(e) => handleButtonRelease(e, '#d32f2f')}
+              onTouchStart={(e) => handleButtonPress(e, '#d32f2f')}
+              onTouchEnd={(e) => handleButtonRelease(e, '#d32f2f')}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showInfoModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000,
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '15px',
+            width: '90%',
+            maxWidth: '340px', // Adjusted to match the outermost container
+            maxHeight: '90%',
+            overflow: 'auto',
+            color: 'black',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}>
+            <h2>Credits</h2>
+            <p>Created with <a href="https://cursor.com">Cursor</a></p>
+            <p>Inspired by <a href="https://www.youtube.com/@AIForHumansShow">AI4Humans Podcast</a></p>
+            <p>Sound effects obtained from <a href="https://freesound.org">freesound.org</a></p>
+            <p>Bertrof (<a href="https://freesound.org/people/Bertrof/">https://freesound.org/people/Bertrof/</a>)</p>
+            <p>"Game Sound Correct.wav"</p>
+            <p>"Game Sound Wrong.wav"</p>
+            <p>"Click Fingers.wav.wav"</p>
+            <p>Pokémon and All Respective Names are Trademark & © of Nintendo 1996-{new Date().getFullYear()}</p>
             <p style={{
-              color: 'white',
+              marginTop: '20px',
               fontWeight: 'bold',
-              fontSize: '0.8em',
-              margin: 0,
+              fontSize: '0.9em',
             }}>
               Version 1.1
             </p>
+            <button
+              onClick={() => setShowInfoModal(false)}
+              style={{
+                ...smallButtonStyle('#f44336'),
+                marginTop: '20px',
+                width: '120px',
+                height: '50px',
+                fontSize: '1.2em',
+              }}
+              onMouseDown={(e) => handleButtonPress(e, '#d32f2f')}
+              onMouseUp={(e) => handleButtonRelease(e, '#d32f2f')}
+              onMouseLeave={(e) => handleButtonRelease(e, '#d32f2f')}
+              onTouchStart={(e) => handleButtonPress(e, '#d32f2f')}
+              onTouchEnd={(e) => handleButtonRelease(e, '#d32f2f')}
+            >
+              Close
+            </button>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

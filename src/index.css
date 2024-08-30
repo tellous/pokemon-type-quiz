@@ -11,3 +11,36 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.custom-slider {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.slider-bars {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
+
+.slider-bar {
+  width: 8px;
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+.slider-handle {
+  position: absolute;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 40px;
+  background-color: #007bff;
+  border-radius: 4px;
+  cursor: pointer;
+}
