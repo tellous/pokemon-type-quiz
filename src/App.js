@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { FaExchangeAlt } from 'react-icons/fa';
+import { FaExchangeAlt, FaChevronLeft, FaChevronRight, FaTimes } from 'react-icons/fa';
 
 function App() {
   const types = ['Normal', 'Fire', 'Water', 'Electric', 'Grass', 'Ice', 'Fighting', 'Poison', 'Ground', 'Flying', 'Psychic', 'Bug', 'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy'];
@@ -10,6 +10,7 @@ function App() {
   };
 
   const [isAttackerMode, setIsAttackerMode] = useState(false);
+  const [isAttackerFocus, setIsAttackerFocus] = useState(true);
   const [topType, setTopType] = useState(getRandomType());
   const [bottomType, setBottomType] = useState(types[0]);
   const [feedback, setFeedback] = useState('');
@@ -61,13 +62,13 @@ function App() {
   const [topTooltipVisible, setTopTooltipVisible] = useState(false);
   const [bottomTooltipVisible, setBottomTooltipVisible] = useState(false);
 
-  const typeNameStyle = (isAttacker) => ({
+  const typeNameStyle = (isTop) => ({
     margin: '10px 0 0 0',
     fontSize: '1em',
-    fontWeight: isAttacker ? 'bold' : 'normal',
-    borderBottom: isAttacker ? '1px dashed #fff' : 'none',
+    fontWeight: 'bold',
+    borderBottom: isTop ? '1px dashed #fff' : 'none',
     display: 'inline-block',
-    cursor: isAttacker ? 'pointer' : 'default',
+    cursor: isTop ? 'pointer' : 'default',
     paddingBottom: '2px',
   });
 
@@ -204,25 +205,29 @@ function App() {
 
   const handleContinue = () => {
     if (isAttackerMode) {
-      // In attacker mode, cycle through defenders (top type)
       const nextDefenderIndex = (types.indexOf(topType) + 1) % types.length;
       setTopType(types[nextDefenderIndex]);
-      // Change the attacker (bottom type) to a new random type
-      let newAttackerType;
-      do {
-        newAttackerType = getRandomType();
-      } while (newAttackerType === bottomType);
-      setBottomType(newAttackerType);
+      if (focusType && isAttackerFocus) {
+        setBottomType(focusType);
+      } else {
+        let newAttackerType;
+        do {
+          newAttackerType = getRandomType();
+        } while (newAttackerType === bottomType);
+        setBottomType(newAttackerType);
+      }
     } else {
-      // In defender mode, cycle through defenders (bottom type)
       const nextDefenderIndex = (types.indexOf(bottomType) + 1) % types.length;
       setBottomType(types[nextDefenderIndex]);
-      // Change the attacker (top type) to a new random type
-      let newAttackerType;
-      do {
-        newAttackerType = getRandomType();
-      } while (newAttackerType === topType);
-      setTopType(newAttackerType);
+      if (focusType && !isAttackerFocus) {
+        setTopType(focusType);
+      } else {
+        let newAttackerType;
+        do {
+          newAttackerType = getRandomType();
+        } while (newAttackerType === topType);
+        setTopType(newAttackerType);
+      }
     }
     setFeedback('');
     setTopTooltipVisible(false);
@@ -246,6 +251,65 @@ function App() {
     Dark: '🌑', Steel: '⚙️', Fairy: '🧚'
   };
 
+  const [focusType, setFocusType] = useState(null);
+  const [focusTypeIndex, setFocusTypeIndex] = useState(0); // 0 represents 'None'
+
+  const handleFocusChange = (direction) => {
+    const newIndex = (focusTypeIndex + direction + types.length + 1) % (types.length + 1);
+    setFocusTypeIndex(newIndex);
+    const newFocusType = newIndex === 0 ? null : types[newIndex - 1];
+    setFocusType(newFocusType);
+    if (newFocusType) {
+      if (isAttackerFocus) {
+        // Change attacker type (bottom in attacker mode, top in defender mode)
+        isAttackerMode ? setBottomType(newFocusType) : setTopType(newFocusType);
+      } else {
+        // Change defender type (top in attacker mode, bottom in defender mode)
+        isAttackerMode ? setTopType(newFocusType) : setBottomType(newFocusType);
+      }
+    }
+  };
+
+  const clearFocus = () => {
+    setFocusTypeIndex(0);
+    setFocusType(null);
+  };
+
+  const toggleFocusMode = () => {
+    const newIsAttackerFocus = !isAttackerFocus;
+    setIsAttackerFocus(newIsAttackerFocus);
+    if (focusType) {
+      if (newIsAttackerFocus) {
+        // Change to attacker focus
+        isAttackerMode ? setBottomType(focusType) : setTopType(focusType);
+      } else {
+        // Change to defender focus
+        isAttackerMode ? setTopType(focusType) : setBottomType(focusType);
+      }
+    }
+  };
+
+  const scoreEmojis = {
+    Highest: '🏆',
+    Current: '🔥',
+    Total: '📝'
+  };
+
+  const smallButtonStyle = {
+    width: 'auto',
+    height: '24px',
+    fontSize: '0.8em',
+    fontWeight: 'bold',
+    border: 'none',
+    borderRadius: '3px',
+    cursor: 'pointer',
+    transition: 'all 0.1s ease',
+    position: 'relative',
+    top: 0,
+    outline: 'none',
+    padding: '0 8px',
+  };
+
   const handleSwap = () => {
     setIsAttackerMode(!isAttackerMode);
     setTopType(bottomType);
@@ -253,13 +317,6 @@ function App() {
     setFeedback('');
     setTopTooltipVisible(false);
     setBottomTooltipVisible(false);
-  };
-
-  const getBrightGlowColor = (type) => {
-    const color = typeColors[type];
-    const rgb = color.match(/\d+/g).map(Number);
-    const brightRgb = rgb.map(c => Math.min(255, c + 100)); // Increase brightness
-    return `rgba(${brightRgb.join(',')}, 0.8)`;
   };
 
   return (
@@ -276,14 +333,12 @@ function App() {
     }}>
       <div style={{
         width: '100%',
-        maxWidth: '375px', // iPhone X width
-        height: '812px', // iPhone X height
-        border: '10px solid #000',
-        borderRadius: '40px',
+        maxWidth: '375px',
+        height: '812px',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: '#fff',
+        backgroundColor: '#282c34',
         position: 'relative',
       }}>
         <div style={{
@@ -293,19 +348,20 @@ function App() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          backgroundColor: '#282c34',
         }}>
           <div style={{
-            marginBottom: '20px',
+            marginBottom: '10px',
             width: '100%',
             textAlign: 'center',
           }}>
             <h1 style={{
-              fontSize: '1.5em',
-              color: '#fff',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+              fontSize: '1.2em',
+              color: '#ffcb05', // Pokémon yellow
+              textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
               marginBottom: '10px',
-              fontWeight: 'bold',
+              fontWeight: 'normal',
+              fontFamily: "'Pocket Monk', sans-serif",
+              letterSpacing: '1px',
             }}>
               Pokémon Type Quiz
             </h1>
@@ -322,20 +378,109 @@ function App() {
               ].map(({ label, value }) => (
                 <div key={label} style={{
                   display: 'flex',
-                  flexDirection: 'column',
                   alignItems: 'center',
-                  flex: 1,
                 }}>
-                  <p style={{ margin: '0 0 5px 0' }}>{label}</p>
-                  <p style={{ 
-                    margin: 0,
-                    fontSize: '1.2em',
-                    fontWeight: 'bold',
-                  }}>
-                    {formatNumber(value)}
-                  </p>
+                  <span style={{ marginRight: '5px' }}>{scoreEmojis[label]}</span>
+                  <span style={{ fontWeight: 'bold' }}>{formatNumber(value)}</span>
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div style={{
+            width: '100%',
+            marginBottom: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}>
+            <div style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '10px',
+            }}>
+              <FaChevronLeft 
+                onClick={() => handleFocusChange(-1)} 
+                style={{ cursor: 'pointer', flex: '0 0 auto' }}
+              />
+              <div style={{ 
+                flex: '1 1 auto', 
+                textAlign: 'center',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                padding: '0 10px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+                Focus: {focusTypeIndex === 0 ? 'None' : (
+                  <>
+                    <span>{types[focusTypeIndex - 1]}</span>
+                    <span style={{ marginLeft: '5px', fontSize: '0.8em', opacity: 0.8 }}>
+                      ({isAttackerFocus ? 'Attacker' : 'Defender'})
+                    </span>
+                  </>
+                )}
+              </div>
+              <FaChevronRight 
+                onClick={() => handleFocusChange(1)} 
+                style={{ cursor: 'pointer', flex: '0 0 auto' }}
+              />
+            </div>
+            <div style={{ height: '30px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {focusTypeIndex !== 0 && (
+                <>
+                  <button
+                    onClick={clearFocus}
+                    style={{
+                      ...smallButtonStyle,
+                      backgroundColor: '#f44336',
+                      color: 'white',
+                      boxShadow: '0 2px 0 #d32f2f',
+                    }}
+                    onMouseDown={(e) => {
+                      e.currentTarget.style.top = '2px';
+                      e.currentTarget.style.boxShadow = '0 0 0 #d32f2f';
+                    }}
+                    onMouseUp={(e) => {
+                      e.currentTarget.style.top = '0';
+                      e.currentTarget.style.boxShadow = '0 2px 0 #d32f2f';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.top = '0';
+                      e.currentTarget.style.boxShadow = '0 2px 0 #d32f2f';
+                    }}
+                  >
+                    Clear
+                  </button>
+                  <button
+                    onClick={toggleFocusMode}
+                    style={{
+                      ...smallButtonStyle,
+                      backgroundColor: '#2196F3',
+                      color: 'white',
+                      boxShadow: '0 2px 0 #1976D2',
+                    }}
+                    onMouseDown={(e) => {
+                      e.currentTarget.style.top = '2px';
+                      e.currentTarget.style.boxShadow = '0 0 0 #1976D2';
+                    }}
+                    onMouseUp={(e) => {
+                      e.currentTarget.style.top = '0';
+                      e.currentTarget.style.boxShadow = '0 2px 0 #1976D2';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.top = '0';
+                      e.currentTarget.style.boxShadow = '0 2px 0 #1976D2';
+                    }}
+                  >
+                    Make {isAttackerFocus ? 'Defender' : 'Attacker'}
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
@@ -352,12 +497,12 @@ function App() {
               <span style={emojiStyle(topType)}>{typeEmojis[topType]}</span>
             </div>
             <p 
-              style={typeNameStyle(!isAttackerMode)}
-              onClick={() => !isAttackerMode && setTopTooltipVisible(!topTooltipVisible)}
+              style={typeNameStyle(true)}
+              onClick={() => setTopTooltipVisible(!topTooltipVisible)}
             >
               {topType}
             </p>
-            {topTooltipVisible && <Tooltip attacker={topType} defender={bottomType} />}
+            {topTooltipVisible && <Tooltip attacker={isAttackerMode ? bottomType : topType} defender={isAttackerMode ? topType : bottomType} />}
           </div>
 
           <button 
@@ -408,12 +553,11 @@ function App() {
               <span style={emojiStyle(bottomType)}>{typeEmojis[bottomType]}</span>
             </div>
             <p 
-              style={typeNameStyle(isAttackerMode)}
-              onClick={() => isAttackerMode && setBottomTooltipVisible(!bottomTooltipVisible)}
+              style={typeNameStyle(false)}
             >
               {bottomType}
             </p>
-            {bottomTooltipVisible && <Tooltip attacker={bottomType} defender={topType} />}
+            {bottomTooltipVisible && <Tooltip attacker={isAttackerMode ? bottomType : topType} defender={isAttackerMode ? topType : bottomType} />}
             <div style={{ 
               display: 'flex', 
               justifyContent: 'center', 
@@ -494,14 +638,22 @@ function App() {
             )}
           </div>
 
-          <p style={{
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: '0.8em',
-            marginTop: '20px'
+          <div style={{
+            position: 'absolute',
+            bottom: '10px',
+            left: '0',
+            right: '0',
+            textAlign: 'center',
           }}>
-            Version 1.1
-          </p>
+            <p style={{
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: '0.8em',
+              margin: 0,
+            }}>
+              Version 1.1
+            </p>
+          </div>
         </div>
       </div>
     </div>
