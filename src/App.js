@@ -282,6 +282,8 @@ function App() {
     }
   }, [isMuted, volume]);
 
+  const [showEffectivenessButtons, setShowEffectivenessButtons] = useState(true);
+
   const handleEffectivenessClick = (effectiveness) => {
     const attacker = isAttackerMode ? bottomType : topType;
     const defender = isAttackerMode ? topType : bottomType;
@@ -304,6 +306,11 @@ function App() {
       setFeedback(`Incorrect.\nThe correct answer was ${correctEffectivenessValue === 0.5 ? '½' : correctEffectivenessValue}x`);
       setCurrentStreak(0);
     }
+
+    // Hide effectiveness buttons after animation
+    setTimeout(() => {
+      setShowEffectivenessButtons(false);
+    }, 100); // Adjust this timing to match your button press animation
   };
 
   const handleContinue = () => {
@@ -339,6 +346,11 @@ function App() {
     setFeedback('');
     setTopTooltipVisible(false);
     setBottomTooltipVisible(false);
+
+    // Show effectiveness buttons after animation
+    setTimeout(() => {
+      setShowEffectivenessButtons(true);
+    }, 100); // Adjust this timing to match your button release animation
   };
 
   const formatNumber = (num) => {
@@ -584,29 +596,49 @@ function App() {
             textAlign: 'center',
             position: 'relative',
           }}>
-            <h2 style={{fontSize: '1.2em', margin: '0 0 10px 0'}}>
-              {isAttackerMode ? '🛡️ Defender' : '⚔️ Attacker'}
-            </h2>
-            <div className="type-color" style={typeContainerStyle(topType)}>
-              <span style={emojiStyle(topType)}>{typeEmojis[topType]}</span>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              width: '100%',
+              marginBottom: '10px',
+            }}>
+              <div className="type-color" style={typeContainerStyle(topType)}>
+                <span style={emojiStyle(topType)}>{typeEmojis[topType]}</span>
+              </div>
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                marginTop: '5px',
+              }}>
+                <p 
+                  style={{...typeNameStyle(true), margin: '0 0 2px 0'}}
+                  onClick={() => setTopTooltipVisible(!topTooltipVisible)}
+                >
+                  {topType}
+                </p>
+                <span style={{
+                  fontSize: '0.8em',
+                  fontWeight: 'bold',
+                  fontFamily: "'Nunito', sans-serif",
+                  opacity: 0.7,
+                }}>
+                  ({isAttackerMode ? '🛡️ Defender' : '⚔️ Attacker'})
+                </span>
+              </div>
             </div>
-            <p 
-              style={typeNameStyle(true)}
-              onClick={() => setTopTooltipVisible(!topTooltipVisible)}
-            >
-              {topType}
-            </p>
             {topTooltipVisible && <Tooltip attacker={isAttackerMode ? bottomType : topType} defender={isAttackerMode ? topType : bottomType} />}
           </div>
 
           <button 
             onClick={handleSwap} 
             style={{
-              margin: '30px 0',
-              padding: '10px 20px',
-              fontSize: '1.5em',
-              backgroundColor: '#FFD700', // Changed to yellow
-              color: 'black', // Changed to black for better contrast on yellow
+              margin: '20px 0', // Reduced margin
+              padding: '10px 15px', // Reduced padding
+              fontSize: '1.2em', // Slightly smaller font size
+              backgroundColor: '#FFD700',
+              color: 'black',
               border: 'none',
               borderRadius: '5px',
               cursor: 'pointer',
@@ -615,23 +647,25 @@ function App() {
               justifyContent: 'center',
               position: 'relative',
               top: 0,
-              boxShadow: '0 6px 0 #DAA520', // Darker yellow for shadow
+              boxShadow: '0 4px 0 #DAA520', // Reduced shadow size
               transition: 'all 0.1s ease',
               fontFamily: "'Nunito', sans-serif",
             }}
-            onMouseDown={(e) => handleButtonPress(e, '#DAA520')} // Darker yellow
-            onMouseUp={(e) => handleButtonRelease(e, '#DAA520')} // Darker yellow
-            onMouseLeave={(e) => handleButtonRelease(e, '#DAA520')} // Darker yellow
-            onTouchStart={(e) => handleButtonPress(e, '#DAA520')} // Darker yellow
-            onTouchEnd={(e) => handleButtonRelease(e, '#DAA520')} // Darker yellow
+            onMouseDown={(e) => handleButtonPress(e, '#DAA520')}
+            onMouseUp={(e) => handleButtonRelease(e, '#DAA520')}
+            onMouseLeave={(e) => handleButtonRelease(e, '#DAA520')}
+            onTouchStart={(e) => handleButtonPress(e, '#DAA520')}
+            onTouchEnd={(e) => handleButtonRelease(e, '#DAA520')}
           >
             <span style={{
               display: 'inline-block',
               transform: isAttackerMode ? 'rotate(-90deg)' : 'rotate(90deg)',
               transition: 'transform 0.3s ease',
+              marginRight: '8px', // Add some space between the icon and text
             }}>
               ➜
             </span>
+            Swap
           </button>
 
           <div className="bottom-section" style={{
@@ -639,345 +673,363 @@ function App() {
             textAlign: 'center',
             position: 'relative',
           }}>
-            <h2 style={{fontSize: '1.2em', margin: '0 0 10px 0'}}>
-              {isAttackerMode ? '⚔️ Attacker' : '🛡️ Defender'}
-            </h2>
-            <div className="type-color" style={typeContainerStyle(bottomType)}>
-              <span style={emojiStyle(bottomType)}>{typeEmojis[bottomType]}</span>
-            </div>
-            <p 
-              style={typeNameStyle(false)}
-            >
-              {bottomType}
-            </p>
-            {bottomTooltipVisible && <Tooltip attacker={isAttackerMode ? bottomType : topType} defender={isAttackerMode ? topType : bottomType} />}
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'center', // Changed to 'center'
-              alignItems: 'center', // Added to ensure vertical centering
-              marginTop: '15px',
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
               width: '100%',
+              marginBottom: '10px',
             }}>
+              <div className="type-color" style={typeContainerStyle(bottomType)}>
+                <span style={emojiStyle(bottomType)}>{typeEmojis[bottomType]}</span>
+              </div>
               <div style={{
                 display: 'flex',
-                justifyContent: 'space-between',
-                width: '100%',
-                maxWidth: '300px', // Adjust this value as needed
+                flexDirection: 'column',
+                alignItems: 'center',
+                marginTop: '5px',
               }}>
-                {[0, '1/2', 1, 2].map((value) => {
-                  const { background, text } = effectivenessColors[value];
-                  const shadowColor = darkenColor(background, 20);
-                  return (
-                    <button 
-                      key={value} 
-                      onClick={() => handleEffectivenessClick(value === '1/2' ? 0.5 : value)} 
-                      disabled={!!feedback}
-                      style={{
-                        ...effectivenessButtonStyle(background, text),
-                        color: text, // Ensure text color is applied
-                      }}
-                      onMouseDown={(e) => handleButtonPress(e, shadowColor, false)}
-                      onMouseUp={(e) => handleButtonRelease(e, shadowColor)}
-                      onMouseLeave={(e) => handleButtonRelease(e, shadowColor)}
-                      onTouchStart={(e) => handleButtonPress(e, shadowColor, false)}
-                      onTouchEnd={(e) => handleButtonRelease(e, shadowColor)}
-                    >
-                      {effectivenessDisplay[value]}
-                    </button>
-                  );
-                })}
+                <p 
+                  style={{...typeNameStyle(false), margin: '0 0 2px 0'}}
+                >
+                  {bottomType}
+                </p>
+                <span style={{
+                  fontSize: '0.8em',
+                  fontWeight: 'bold',
+                  fontFamily: "'Nunito', sans-serif",
+                  opacity: 0.7,
+                }}>
+                  ({isAttackerMode ? '⚔️ Attacker' : '🛡️ Defender'})
+                </span>
               </div>
             </div>
-          </div>
-
-          <div style={{
-            height: '120px', // Fixed height for results area
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-          }}>
-            {feedback && (
-              <div style={{
-                marginTop: '20px',
-                fontSize: '1.2em',
-                fontWeight: 'bold',
-                color: feedback.includes('Correct') ? '#4CAF50' : '#f44336',
-                textAlign: 'center',
-                whiteSpace: 'pre-line', // This allows line breaks in the text
+            {bottomTooltipVisible && <Tooltip attacker={isAttackerMode ? bottomType : topType} defender={isAttackerMode ? topType : bottomType} />}
+            {showEffectivenessButtons ? (
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginTop: '15px',
+                width: '100%',
               }}>
-                {feedback}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  maxWidth: '300px',
+                }}>
+                  {[0, '1/2', 1, 2].map((value) => {
+                    const { background, text } = effectivenessColors[value];
+                    const shadowColor = darkenColor(background, 20);
+                    return (
+                      <button 
+                        key={value} 
+                        onClick={() => handleEffectivenessClick(value === '1/2' ? 0.5 : value)} 
+                        disabled={!!feedback}
+                        style={{
+                          ...effectivenessButtonStyle(background, text),
+                          color: text,
+                        }}
+                        onMouseDown={(e) => handleButtonPress(e, shadowColor, false)}
+                        onMouseUp={(e) => handleButtonRelease(e, shadowColor)}
+                        onMouseLeave={(e) => handleButtonRelease(e, shadowColor)}
+                        onTouchStart={(e) => handleButtonPress(e, shadowColor, false)}
+                        onTouchEnd={(e) => handleButtonRelease(e, shadowColor)}
+                      >
+                        {effectivenessDisplay[value]}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <div style={{
+                height: '120px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-start', // Changed from 'center' to 'flex-start'
+                alignItems: 'center',
+                width: '100%',
+              }}>
+                <div style={{
+                  marginTop: '10px', // Reduced top margin
+                  fontSize: '1.2em',
+                  fontWeight: 'bold',
+                  color: feedback.includes('Correct') ? '#4CAF50' : '#f44336',
+                  textAlign: 'center',
+                  whiteSpace: 'pre-line',
+                }}>
+                  {feedback}
+                </div>
+
+                <button 
+                  onClick={handleContinue}
+                  style={{
+                    ...smallButtonStyle('#2196F3'),
+                    width: 'auto',
+                    padding: '10px 20px',
+                    marginTop: 'auto', // Changed from fixed value to 'auto'
+                    marginBottom: '10px', // Added bottom margin
+                    fontFamily: "'Nunito', sans-serif",
+                  }}
+                  onMouseDown={(e) => handleButtonPress(e, '#1976D2')}
+                  onMouseUp={(e) => handleButtonRelease(e, '#1976D2')}
+                  onMouseLeave={(e) => handleButtonRelease(e, '#1976D2')}
+                  onTouchStart={(e) => handleButtonPress(e, '#1976D2')}
+                  onTouchEnd={(e) => handleButtonRelease(e, '#1976D2')}
+                >
+                  Continue
+                </button>
               </div>
             )}
-
-            {feedback && (
-              <button 
-                onClick={handleContinue}
-                style={{
-                  ...smallButtonStyle('#2196F3'),
-                  width: 'auto',
-                  padding: '10px 20px',
-                  marginTop: '10px',
-                  fontFamily: "'Nunito', sans-serif",
-                }}
-                onMouseDown={(e) => handleButtonPress(e, '#1976D2')}
-                onMouseUp={(e) => handleButtonRelease(e, '#1976D2')}
-                onMouseLeave={(e) => handleButtonRelease(e, '#1976D2')}
-                onTouchStart={(e) => handleButtonPress(e, '#1976D2')}
-                onTouchEnd={(e) => handleButtonRelease(e, '#1976D2')}
-              >
-                Continue
-              </button>
-            )}
           </div>
-        </div>
-      </div>
 
-      {/* Settings Modal */}
-      {showSettingsModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000,
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            padding: '30px',
-            borderRadius: '15px',
-            width: '90%',
-            maxWidth: '340px', // Adjusted to match the outermost container
-            maxHeight: '90%',
-            overflow: 'auto',
-            color: 'black',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}>
-            <h2 style={{ fontSize: '1.8em', marginBottom: '20px' }}>Settings</h2>
-            
-            {/* Sound Settings */}
-            <button 
-              onClick={toggleMute} 
-              style={largeButtonStyle(isMuted ? '#f44336' : '#4CAF50')}
-              onMouseDown={(e) => handleButtonPress(e, isMuted ? '#d32f2f' : '#45a049', false)}
-              onMouseUp={(e) => handleButtonRelease(e, isMuted ? '#d32f2f' : '#45a049')}
-              onMouseLeave={(e) => handleButtonRelease(e, isMuted ? '#d32f2f' : '#45a049')}
-              onTouchStart={(e) => handleButtonPress(e, isMuted ? '#d32f2f' : '#45a049', false)}
-              onTouchEnd={(e) => handleButtonRelease(e, isMuted ? '#d32f2f' : '#45a049')}
-            >
-              {isMuted ? '🔇 Sound Off' : '🔊 Sound On'}
-            </button>
-
-            {/* Volume Slider - only show when sound is on */}
-            {!isMuted && (
+          {showSettingsModal && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 1000,
+            }}>
               <div style={{
-                width: '100%',
-                marginTop: '20px',
+                backgroundColor: 'white',
+                padding: '30px',
+                borderRadius: '15px',
+                width: '90%',
+                maxWidth: '340px', // Adjusted to match the outermost container
+                maxHeight: '90%',
+                overflow: 'auto',
+                color: 'black',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
               }}>
+                <h2 style={{ fontSize: '1.8em', marginBottom: '20px' }}>Settings</h2>
+                
+                {/* Sound Settings */}
+                <button 
+                  onClick={toggleMute} 
+                  style={largeButtonStyle(isMuted ? '#f44336' : '#4CAF50')}
+                  onMouseDown={(e) => handleButtonPress(e, isMuted ? '#d32f2f' : '#45a049', false)}
+                  onMouseUp={(e) => handleButtonRelease(e, isMuted ? '#d32f2f' : '#45a049')}
+                  onMouseLeave={(e) => handleButtonRelease(e, isMuted ? '#d32f2f' : '#45a049')}
+                  onTouchStart={(e) => handleButtonPress(e, isMuted ? '#d32f2f' : '#45a049', false)}
+                  onTouchEnd={(e) => handleButtonRelease(e, isMuted ? '#d32f2f' : '#45a049')}
+                >
+                  {isMuted ? '🔇 Sound Off' : '🔊 Sound On'}
+                </button>
+
+                {/* Volume Slider - only show when sound is on */}
+                {!isMuted && (
+                  <div style={{
+                    width: '100%',
+                    marginTop: '20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                  }}>
+                    <div style={{
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '15px',
+                    }}>
+                      <span style={{ marginRight: '15px' }}>Volume:</span>
+                      <div style={{ 
+                        flex: 1,
+                        maxWidth: '200px',
+                      }}>
+                        <CustomSlider
+                          value={volume}
+                          onChange={setVolume}
+                        />
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'center', marginTop: '10px' }}>
+                      {Math.round(volume * 100)}%
+                    </div>
+                  </div>
+                )}
+
+                {/* Focus Settings */}
                 <div style={{
                   width: '100%',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '15px',
-                }}>
-                  <span style={{ marginRight: '15px' }}>Volume:</span>
-                  <div style={{ 
-                    flex: 1,
-                    maxWidth: '200px',
-                  }}>
-                    <CustomSlider
-                      value={volume}
-                      onChange={setVolume}
-                    />
-                  </div>
-                </div>
-                <div style={{ textAlign: 'center', marginTop: '10px' }}>
-                  {Math.round(volume * 100)}%
-                </div>
-              </div>
-            )}
-
-            {/* Focus Settings */}
-            <div style={{
-              width: '100%',
-              marginTop: '20px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}>
-              <div style={{
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '10px',
-              }}>
-                <button
-                  onClick={() => handleFocusChange(-1)}
-                  style={{...mediumButtonStyle('#FFD700'), width: '50px', color: 'black'}}
-                  onMouseDown={(e) => handleButtonPress(e, '#DAA520')}
-                  onMouseUp={(e) => handleButtonRelease(e, '#DAA520')}
-                  onMouseLeave={(e) => handleButtonRelease(e, '#DAA520')}
-                  onTouchStart={(e) => handleButtonPress(e, '#DAA520')}
-                  onTouchEnd={(e) => handleButtonRelease(e, '#DAA520')}
-                >
-                  <FaChevronLeft />
-                </button>
-                <div style={{ 
-                  flex: '1 1 auto', 
-                  textAlign: 'center',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  padding: '0 10px',
+                  marginTop: '20px',
                   display: 'flex',
                   flexDirection: 'column',
-                  justifyContent: 'center',
                   alignItems: 'center',
-                  fontFamily: "'Nunito', sans-serif",
-                  fontSize: '1.2em',
                 }}>
-                  <span>Focus</span>
-                  {focusTypeIndex === 0 ? (
-                    <span style={{ fontSize: '0.9em', opacity: 0.8 }}>None</span>
-                  ) : (
-                    <>
-                      <span>{types[focusTypeIndex - 1]}</span>
-                      <span style={{ fontSize: '0.8em', opacity: 0.8 }}>
-                        ({isAttackerFocus ? '⚔️ Attacker' : '🛡️ Defender'})
-                      </span>
-                    </>
+                  <div style={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '10px',
+                  }}>
+                    <button
+                      onClick={() => handleFocusChange(-1)}
+                      style={{...mediumButtonStyle('#FFD700'), width: '50px', color: 'black'}}
+                      onMouseDown={(e) => handleButtonPress(e, '#DAA520')}
+                      onMouseUp={(e) => handleButtonRelease(e, '#DAA520')}
+                      onMouseLeave={(e) => handleButtonRelease(e, '#DAA520')}
+                      onTouchStart={(e) => handleButtonPress(e, '#DAA520')}
+                      onTouchEnd={(e) => handleButtonRelease(e, '#DAA520')}
+                    >
+                      <FaChevronLeft />
+                    </button>
+                    <div style={{ 
+                      flex: '1 1 auto', 
+                      textAlign: 'center',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      padding: '0 10px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      fontFamily: "'Nunito', sans-serif",
+                      fontSize: '1.2em',
+                    }}>
+                      <span>Focus</span>
+                      {focusTypeIndex === 0 ? (
+                        <span style={{ fontSize: '0.9em', opacity: 0.8 }}>None</span>
+                      ) : (
+                        <>
+                          <span>{types[focusTypeIndex - 1]}</span>
+                          <span style={{ fontSize: '0.8em', opacity: 0.8 }}>
+                            ({isAttackerFocus ? '⚔️ Attacker' : '🛡️ Defender'})
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => handleFocusChange(1)}
+                      style={{...mediumButtonStyle('#FFD700'), width: '50px', color: 'black'}}
+                      onMouseDown={(e) => handleButtonPress(e, '#DAA520')}
+                      onMouseUp={(e) => handleButtonRelease(e, '#DAA520')}
+                      onMouseLeave={(e) => handleButtonRelease(e, '#DAA520')}
+                      onTouchStart={(e) => handleButtonPress(e, '#DAA520')}
+                      onTouchEnd={(e) => handleButtonRelease(e, '#DAA520')}
+                    >
+                      <FaChevronRight />
+                    </button>
+                  </div>
+                  {focusTypeIndex !== 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+                      <button
+                        onClick={clearFocus}
+                        style={mediumButtonStyle('#f44336')}
+                        onMouseDown={(e) => handleButtonPress(e, '#d32f2f')}
+                        onMouseUp={(e) => handleButtonRelease(e, '#d32f2f')}
+                        onMouseLeave={(e) => handleButtonRelease(e, '#d32f2f')}
+                        onTouchStart={(e) => handleButtonPress(e, '#d32f2f')}
+                        onTouchEnd={(e) => handleButtonRelease(e, '#d32f2f')}
+                      >
+                        Clear Focus
+                      </button>
+                      <button
+                        onClick={toggleFocusMode}
+                        style={mediumButtonStyle('#2196F3')}
+                        onMouseDown={(e) => handleButtonPress(e, '#1976D2')}
+                        onMouseUp={(e) => handleButtonRelease(e, '#1976D2')}
+                        onMouseLeave={(e) => handleButtonRelease(e, '#1976D2')}
+                        onTouchStart={(e) => handleButtonPress(e, '#1976D2')}
+                        onTouchEnd={(e) => handleButtonRelease(e, '#1976D2')}
+                      >
+                        Make {isAttackerFocus ? '🛡️ Defender' : '⚔️ Attacker'}
+                      </button>
+                    </div>
                   )}
                 </div>
+
                 <button
-                  onClick={() => handleFocusChange(1)}
-                  style={{...mediumButtonStyle('#FFD700'), width: '50px', color: 'black'}}
-                  onMouseDown={(e) => handleButtonPress(e, '#DAA520')}
-                  onMouseUp={(e) => handleButtonRelease(e, '#DAA520')}
-                  onMouseLeave={(e) => handleButtonRelease(e, '#DAA520')}
-                  onTouchStart={(e) => handleButtonPress(e, '#DAA520')}
-                  onTouchEnd={(e) => handleButtonRelease(e, '#DAA520')}
+                  onClick={() => setShowSettingsModal(false)}
+                  style={{...largeButtonStyle('#f44336'), marginTop: '30px'}}
+                  onMouseDown={(e) => handleButtonPress(e, '#d32f2f')}
+                  onMouseUp={(e) => handleButtonRelease(e, '#d32f2f')}
+                  onMouseLeave={(e) => handleButtonRelease(e, '#d32f2f')}
+                  onTouchStart={(e) => handleButtonPress(e, '#d32f2f')}
+                  onTouchEnd={(e) => handleButtonRelease(e, '#d32f2f')}
                 >
-                  <FaChevronRight />
+                  Close
                 </button>
               </div>
-              {focusTypeIndex !== 0 && (
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-                  <button
-                    onClick={clearFocus}
-                    style={mediumButtonStyle('#f44336')}
-                    onMouseDown={(e) => handleButtonPress(e, '#d32f2f')}
-                    onMouseUp={(e) => handleButtonRelease(e, '#d32f2f')}
-                    onMouseLeave={(e) => handleButtonRelease(e, '#d32f2f')}
-                    onTouchStart={(e) => handleButtonPress(e, '#d32f2f')}
-                    onTouchEnd={(e) => handleButtonRelease(e, '#d32f2f')}
-                  >
-                    Clear Focus
-                  </button>
-                  <button
-                    onClick={toggleFocusMode}
-                    style={mediumButtonStyle('#2196F3')}
-                    onMouseDown={(e) => handleButtonPress(e, '#1976D2')}
-                    onMouseUp={(e) => handleButtonRelease(e, '#1976D2')}
-                    onMouseLeave={(e) => handleButtonRelease(e, '#1976D2')}
-                    onTouchStart={(e) => handleButtonPress(e, '#1976D2')}
-                    onTouchEnd={(e) => handleButtonRelease(e, '#1976D2')}
-                  >
-                    Make {isAttackerFocus ? '🛡️ Defender' : '⚔️ Attacker'}
-                  </button>
-                </div>
-              )}
             </div>
+          )}
 
-            <button
-              onClick={() => setShowSettingsModal(false)}
-              style={{...largeButtonStyle('#f44336'), marginTop: '30px'}}
-              onMouseDown={(e) => handleButtonPress(e, '#d32f2f')}
-              onMouseUp={(e) => handleButtonRelease(e, '#d32f2f')}
-              onMouseLeave={(e) => handleButtonRelease(e, '#d32f2f')}
-              onTouchStart={(e) => handleButtonPress(e, '#d32f2f')}
-              onTouchEnd={(e) => handleButtonRelease(e, '#d32f2f')}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-
-      {showInfoModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000,
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            padding: '20px',
-            borderRadius: '15px',
-            width: '90%',
-            maxWidth: '340px', // Adjusted to match the outermost container
-            maxHeight: '90%',
-            overflow: 'auto',
-            color: 'black',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}>
-            <h2>Credits</h2>
-            <p>Created with <a href="https://cursor.com">Cursor</a></p>
-            <p>Inspired by <a href="https://www.youtube.com/@AIForHumansShow">AI4Humans Podcast</a></p>
-            <p>Sound effects obtained from <a href="https://freesound.org">freesound.org</a></p>
-            <p>Bertrof (<a href="https://freesound.org/people/Bertrof/">https://freesound.org/people/Bertrof/</a>)</p>
-            <p>"Game Sound Correct.wav"</p>
-            <p>"Game Sound Wrong.wav"</p>
-            <p>"Click Fingers.wav.wav"</p>
-            <p>Pokémon and All Respective Names are Trademark & © of Nintendo 1996-{new Date().getFullYear()}</p>
-            <p style={{
-              marginTop: '20px',
-              fontWeight: 'bold',
-              fontSize: '0.9em',
+          {showInfoModal && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 1000,
             }}>
-              Version 1.1
-            </p>
-            <button
-              onClick={() => setShowInfoModal(false)}
-              style={{
-                ...smallButtonStyle('#f44336'),
-                marginTop: '20px',
-                width: '120px',
-                height: '50px',
-                fontSize: '1.2em',
-              }}
-              onMouseDown={(e) => handleButtonPress(e, '#d32f2f')}
-              onMouseUp={(e) => handleButtonRelease(e, '#d32f2f')}
-              onMouseLeave={(e) => handleButtonRelease(e, '#d32f2f')}
-              onTouchStart={(e) => handleButtonPress(e, '#d32f2f')}
-              onTouchEnd={(e) => handleButtonRelease(e, '#d32f2f')}
-            >
-              Close
-            </button>
-          </div>
+              <div style={{
+                backgroundColor: 'white',
+                padding: '20px',
+                borderRadius: '15px',
+                width: '90%',
+                maxWidth: '340px', // Adjusted to match the outermost container
+                maxHeight: '90%',
+                overflow: 'auto',
+                color: 'black',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}>
+                <h2>Credits</h2>
+                <p>Created with <a href="https://cursor.com">Cursor</a></p>
+                <p>Inspired by <a href="https://www.youtube.com/@AIForHumansShow">AI4Humans Podcast</a></p>
+                <p>Sound effects obtained from <a href="https://freesound.org">freesound.org</a></p>
+                <p>Bertrof (<a href="https://freesound.org/people/Bertrof/">https://freesound.org/people/Bertrof/</a>)</p>
+                <p>"Game Sound Correct.wav"</p>
+                <p>"Game Sound Wrong.wav"</p>
+                <p>"Click Fingers.wav.wav"</p>
+                <p>Pokémon and All Respective Names are Trademark & © of Nintendo 1996-{new Date().getFullYear()}</p>
+                <p style={{
+                  marginTop: '20px',
+                  fontWeight: 'bold',
+                  fontSize: '0.9em',
+                }}>
+                  Version 1.1
+                </p>
+                <button
+                  onClick={() => setShowInfoModal(false)}
+                  style={{
+                    ...smallButtonStyle('#f44336'),
+                    marginTop: '20px',
+                    width: '120px',
+                    height: '50px',
+                    fontSize: '1.2em',
+                  }}
+                  onMouseDown={(e) => handleButtonPress(e, '#d32f2f')}
+                  onMouseUp={(e) => handleButtonRelease(e, '#d32f2f')}
+                  onMouseLeave={(e) => handleButtonRelease(e, '#d32f2f')}
+                  onTouchStart={(e) => handleButtonPress(e, '#d32f2f')}
+                  onTouchEnd={(e) => handleButtonRelease(e, '#d32f2f')}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
