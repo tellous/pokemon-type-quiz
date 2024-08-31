@@ -10,12 +10,10 @@ const TypeSectionContent = ({ type, role, onClick, isTopSection, isSwapping, isF
   return (
     <div className="type-section-container" onClick={onClick}>
       <div className={`type-section ${isSliding && !isFocused ? 'sliding-out' : ''} ${isFocused ? 'focused' : ''}`}>
-        <div className="type-content">
-          <div className="type-circle" style={{ backgroundColor: getTypeColor(currentType) }}>
-            {getTypeEmoji(currentType) || ''}
-          </div>
+        <div className="type-content" style={{ backgroundColor: getTypeColor(currentType) }}>
+          <span className="type-emoji">{getTypeEmoji(currentType) || ''}</span>
           <div className="type-text">
-            <p className={`type-name ${isTopSection ? "underlined" : ""}`}>{currentType}</p>
+            <p className="type-name">{currentType}</p>
             <span className="type-role">{currentRole === 'Attacker' ? '⚔️' : '🛡️'} {currentRole}</span>
           </div>
         </div>

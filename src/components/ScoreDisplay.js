@@ -14,10 +14,11 @@ const ScoreDisplay = ({ highestStreak, currentStreak, totalQuestions }) => (
       <div key={label} style={appStyles.scoreItem}>
         <div style={appStyles.scoreValue}>
           <span style={appStyles.scoreEmoji}>{scoreEmojis[label]}</span>
-          <p style={appStyles.scoreNumber}>
+          <span style={appStyles.scoreNumber}>
             {formatNumber(label === 'Highest' ? highestStreak : label === 'Current' ? currentStreak : totalQuestions)}
-          </p>
+          </span>
         </div>
+        <span style={appStyles.scoreLabel}>{label}</span>
       </div>
     ))}
   </div>

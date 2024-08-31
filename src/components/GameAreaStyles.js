@@ -4,7 +4,7 @@ export const gameAreaStyles = {
       flexDirection: 'column',
       alignItems: 'center',
       width: '100%',
-      marginTop: '30px',
+      marginTop: '15px', // Changed from '30px' to '0'
     },
     typeSectionWrapper: {
       width: '100%',
@@ -12,7 +12,7 @@ export const gameAreaStyles = {
     },
     swapButton: (swapButtonStyle) => ({
       ...swapButtonStyle,
-      margin: '20px 0',
+      margin: '15px 0', // Reduced top and bottom margin
       padding: '10px 20px',
       display: 'flex',
       alignItems: 'center',

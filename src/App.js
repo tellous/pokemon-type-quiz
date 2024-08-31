@@ -70,11 +70,13 @@ function App() {
             />
           </ErrorBoundary>
 
-          <EffectivenessButtons
-            handleEffectivenessClick={gameState.handleEffectivenessClick}
-            showEffectivenessButtons={gameState.showEffectivenessButtons}
-            audioSettings={audioSettings}
-          />
+          {gameState.showEffectivenessButtons && (
+            <EffectivenessButtons
+              handleEffectivenessClick={gameState.handleEffectivenessClick}
+              showEffectivenessButtons={gameState.showEffectivenessButtons}
+              audioSettings={audioSettings}
+            />
+          )}
 
           <div style={appStyles.feedbackContainer}>
             {!gameState.showEffectivenessButtons && (

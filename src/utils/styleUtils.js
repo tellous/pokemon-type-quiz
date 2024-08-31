@@ -82,13 +82,13 @@ export const appStyles = {
   scoreContainer: {
     display: 'flex',
     justifyContent: 'space-around',
-    marginBottom: '20px',
     width: '100%',
-    fontFamily: "'Nunito', sans-serif",
+    padding: '10px 0',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: '10px',
+    marginTop: '10px',
   },
   scoreItem: {
-    textAlign: 'center',
-    flex: 1,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -96,15 +96,20 @@ export const appStyles = {
   scoreValue: {
     display: 'flex',
     alignItems: 'center',
-    gap: '5px',
   },
   scoreEmoji: {
-    fontSize: '1.2em',
+    fontSize: '18px',
+    marginRight: '4px',
   },
   scoreNumber: {
-    margin: '0',
-    fontSize: '1.2em',
+    fontSize: '18px',
     fontWeight: 'bold',
+    margin: '0',
+  },
+  scoreLabel: {
+    fontSize: '12px',
+    marginTop: '2px',
+    opacity: 0.8,
   },
   feedbackContainer: {
     width: '100%',
