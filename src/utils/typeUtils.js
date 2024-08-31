@@ -1,4 +1,4 @@
-import { TYPES, TYPE_EMOJIS, TYPE_COLORS } from '../constants/types';
+import { TYPES, TYPE_EMOJIS, TYPE_COLORS, TYPE_CHART } from '../constants/types';
 
 // Any additional type-related utility functions can be defined here
 // For example:
@@ -14,3 +14,5 @@ export const getRandomType = (currentType = null) => {
 export const getType = (index) => {
     return TYPES[index];
 };
+
+export const getTypesChart = () => TYPE_CHART;

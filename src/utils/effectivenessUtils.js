@@ -1,29 +1,33 @@
+import { getTypesChart } from "./typeUtils";
+
 export const calculateEffectiveness = (attackerType, defenderType) => {
-    // Implement your effectiveness calculation logic here
-    // This is a placeholder, replace with your actual implementation
-    return 1;
-  };
-  
-  export const getEffectivenessText = (effectiveness) => {
-    switch (effectiveness) {
-      case 0: return "No effect";
-      case 0.5: return "Not very effective";
-      case 1: return "Normal effectiveness";
-      case 2: return "Super effective";
-      default: return "Unknown effectiveness";
-    }
-  };
-  
-  export const getEffectivenessColor = (effectiveness) => {
-    switch (effectiveness) {
-      case 0: return 'gray';
-      case 0.5: return 'red';
-      case 1: return 'white';
-      case 2: return 'green';
-      default: return 'white';
-    }
-  };
-  
+  const typeChart = getTypesChart();
+  if (typeChart[attackerType] && typeChart[attackerType][defenderType] !== undefined) {
+    return typeChart[attackerType][defenderType];
+  }
+  return 1; // Default to normal effectiveness if not found in the chart
+};
+
+export const getEffectivenessText = (effectiveness) => {
+  switch (effectiveness) {
+    case 0: return "No effect";
+    case 0.5: return "Not very effective";
+    case 1: return "Normal effectiveness";
+    case 2: return "Super effective";
+    default: return "Unknown effectiveness";
+  }
+};
+
+export const getEffectivenessColor = (effectiveness) => {
+  switch (effectiveness) {
+    case 0: return 'gray';
+    case 0.5: return 'red';
+    case 1: return 'white';
+    case 2: return 'green';
+    default: return 'white';
+  }
+};
+
 export const generateTooltipContent = (attackerType, defenderType, effectiveness) => (
   <>
     <p style={{ fontSize: '16px', marginBottom: '10px' }}>
@@ -34,7 +38,7 @@ export const generateTooltipContent = (attackerType, defenderType, effectiveness
       fontSize: '28px',
       margin: '15px 0'
     }}>
-      {effectiveness}x
+      {effectivenessDisplay[effectiveness]}x
     </p>
     <p style={{ fontSize: '16px', marginTop: '10px' }}>{getEffectivenessText(effectiveness)}</p>
   </>
