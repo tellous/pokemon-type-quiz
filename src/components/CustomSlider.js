@@ -39,14 +39,6 @@ const CustomSlider = ({ value, onChange, disabled }) => {
         };
     }, [disabled, onChange]);
 
-    const handleClick = (e) => {
-        if (disabled) return;
-        const rect = sliderRef.current.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const newValue = Math.max(0, Math.min(1, x / rect.width));
-        onChange(newValue);
-    };
-
     return (
         <div 
             ref={sliderRef}

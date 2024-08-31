@@ -1,18 +1,18 @@
 {
   "files": {
-    "main.css": "/pokemon-type-quiz/static/css/main.53d80cb5.css",
-    "main.js": "/pokemon-type-quiz/static/js/main.ce7976dc.js",
+    "main.css": "/pokemon-type-quiz/static/css/main.b1a38978.css",
+    "main.js": "/pokemon-type-quiz/static/js/main.51deb53f.js",
     "static/js/453.ad6eb26e.chunk.js": "/pokemon-type-quiz/static/js/453.ad6eb26e.chunk.js",
     "static/media/correct-sound.mp3": "/pokemon-type-quiz/static/media/correct-sound.afdbe1bc26f153e7b7a7.mp3",
     "static/media/incorrect-sound.mp3": "/pokemon-type-quiz/static/media/incorrect-sound.9a0b3490d9d61e3753b1.mp3",
     "static/media/click-sound.mp3": "/pokemon-type-quiz/static/media/click-sound.17b96382fdd5e24559fa.mp3",
     "index.html": "/pokemon-type-quiz/index.html",
-    "main.53d80cb5.css.map": "/pokemon-type-quiz/static/css/main.53d80cb5.css.map",
-    "main.ce7976dc.js.map": "/pokemon-type-quiz/static/js/main.ce7976dc.js.map",
+    "main.b1a38978.css.map": "/pokemon-type-quiz/static/css/main.b1a38978.css.map",
+    "main.51deb53f.js.map": "/pokemon-type-quiz/static/js/main.51deb53f.js.map",
     "453.ad6eb26e.chunk.js.map": "/pokemon-type-quiz/static/js/453.ad6eb26e.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.53d80cb5.css",
-    "static/js/main.ce7976dc.js"
+    "static/css/main.b1a38978.css",
+    "static/js/main.51deb53f.js"
   ]
 }

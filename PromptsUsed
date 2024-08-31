@@ -1,3 +1,5 @@
+This is what I used to generate version 1. Later versions were a lot more complex and took several prompts to generate.
+
 Prompt 1: Make the app be a 3 row layout. On the top show a header that says "Attacking" and below write a pokemon type. In the second row show the type color in a square. On the third row, show all of the possible pokemon types with a radio button by each that says 0,2x,1,and 1/2. Default the radio buttons to 1. On the fourth row put a submit button that grades the correct answers and display a score below the submit button that says "Your Score"
 
 Prompt 2: when I press submit, I want you to grade whether the radio button choices were correct. Add "Defender" over the list of types. After submission change to a new random type and change the color of the box.
