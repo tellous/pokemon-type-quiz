@@ -15,16 +15,17 @@
 }
 
 .type-section.sliding-out {
-  transform: translateX(100%);
+  transform: translate3d(100%, 0, 0); /* Changed to translate3d for consistency */
+  transition: transform 0.3s ease-in-out; /* Ensure timing is consistent */
 }
 
 @keyframes slideIn {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
+  from { transform: translate3d(-100%, 0, 0); } /* Changed to translate3d */
+  to { transform: translate3d(0, 0, 0); }
 }
 
 .type-section:not(.sliding-out) {
-  animation: slideIn 0.3s ease-in-out;
+  animation: slideIn 0.3s ease-in-out; /* Ensure timing is consistent */
 }
 
 .type-content {
